@@ -7,8 +7,17 @@ OBJ=./obj/
 OUT=./out/
 SRC=./src/
 
-build:
-	${CC} ${SRC}/main.c -Wall -Wshadow ${HEADERS} -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -o ${OUT}game
+build: objects
+	${CC} units.o main.o -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -o game
+	mv ./*.o ${OBJ}
+	mv ./game ${OUT}
+
+objects:
+	${CC} ${OFLAGS} ${HEADERS} ${DEBUG} ${SRC}units.c -o units.o
+	${CC} ${OFLAGS} ${HEADERS} ${DEBUG} ${SRC}main.c -o main.o
 
 clean:
 	rm $(OBJ)* $(OUT)* *.o
+
+run:
+	./out/game
