@@ -2,8 +2,13 @@
 #define UNITS_H
 
 void render_units(void);
-void add_unit(struct unit *unit);
-bool remove_unit(struct unit *unit);
-struct unit;
+
+typedef struct unit
+{
+    int id;
+    int health;
+    Vector2 speed;
+    Vector2 position;
+} unit_t;
 
 #endif // UNITS_H
