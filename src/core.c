@@ -2,13 +2,16 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdbool.h>
+#include <raylib.h>
+
 #include "core.h"
+#include "units.h"
 
 void *OOM_GUARD(void *object)
 {
     if (object == NULL)
     {
-        fprintf(stderr, "OUT OF MEMORY ERROR.\n");
+        fprintf(stderr, "Out of memory.\n");
         exit(EXIT_FAILURE);
     }
     return object;
@@ -18,7 +21,16 @@ void list_append(struct list *list, void *item)
 {
     struct node *new_node = OOM_GUARD(calloc(1, sizeof(struct node)));
     new_node->value = item;
-    list->tail->next = new_node;
+    if (list->tail)
+    {
+        list->tail->next = new_node;
+        list->tail = new_node;
+    }
+    else
+    {
+        list->head.next = new_node;
+        list->tail = new_node;
+    }
     list->size++;
 }
 
@@ -57,7 +69,7 @@ void list_clear(struct list *list)
     }
 }
 
-void list_foreach(struct list *list, void (*cb)(void *item))
+void list_foreach(const struct list *list, void (*cb)(void *item))
 {
     struct node *current = list->head.next;
     while (current)
@@ -67,44 +79,11 @@ void list_foreach(struct list *list, void (*cb)(void *item))
     }
 }
 
-void list_tail(struct list *list, struct list *out, size_t n)
-{
-    out->memory_flag = list->memory_flag;
-    out->tail = list->tail;
-
-    // Deep copy
-    if (list->size <= n)
-    {
-        out->head = list->head;
-        out->tail = list->tail;
-        out->size = list->size;
-        return;
-    }
-
-    
-    struct node *current;
-    for (int i = 0; i < list->size - n; i++)
-    {
-        current = current->next;
-    }
-    out->head.next = current;
-
-    size_t size = 0;
-    while (current)
-    {
-        current = current->next;
-        size++;
-    }
-    out->size = size;
-}
-
-
-
 void *list_pop(struct list *list, void *item)
 {
     void *result = NULL;
-    struct node *prev = &list->head;         // Empty root node-object.
-    struct node *current = &list->head.next; // First real value.
+    struct node *prev = &(list->head);
+    struct node *current = list->head.next;
     struct node *next = NULL;
 
     while (current != NULL)
@@ -125,4 +104,37 @@ void *list_pop(struct list *list, void *item)
         prev = current;
     }
     return result;
+}
+
+
+void input(Vector2 *pos)
+{
+    if (IsKeyDown(KEY_RIGHT))
+        pos->x += 2.0f;
+    if (IsKeyDown(KEY_LEFT))
+        pos->x -= 2.0f;
+    if (IsKeyDown(KEY_UP))
+        pos->y -= 2.0f;
+    if (IsKeyDown(KEY_DOWN))
+        pos->y += 2.0f;
+}
+
+void init(void)
+{
+    InitWindow(1280, 720, "Mineload");
+    SetTargetFPS(60);
+    ToggleFullscreen();
+    units_init();
+}
+
+void render(void)
+{
+    ClearBackground(BLACK);
+    DrawText("move the ball with arrow keys", 10, 10, 20, WHITE);
+    render_units();
+}
+
+void clean(void)
+{
+    units_cleanup();
 }

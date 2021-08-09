@@ -3,15 +3,49 @@
 #include "units.h"
 #include "core.h"
 
-static const struct node UNIT_ROOT = {0};
-static int unit_count = 0;
+static struct list FRIENDLIES;
+static struct list ENEMIES;
+
+void units_init(void)
+{
+    FRIENDLIES = (struct list) {.memory_flag = HEAP_VALUES};
+    ENEMIES = (struct list) {.memory_flag = HEAP_VALUES};
+}
+
+static void render_enemy_unit(void *u)
+{
+    unit_t *unit = u;
+    unit->position.x += 1.0f;
+    unit->position.y += 1.0f;
+    DrawCircleV(unit->position, 30, COLOR_RED);
+}
+
+static void render_friendly_unit(void *u)
+{
+    unit_t *unit = u;
+    unit->position.x -= 1.0f;
+    unit->position.y -= 1.0f;
+    DrawCircleV(unit->position, 30, COLOR_GREEN);
+}
 
 void render_units(void)
 {
-    struct node *unit;
-    do
-    {
-        unit = UNIT_ROOT.next;
-        DrawCircleV(((struct unit *)unit->value)->position, 80, MAROON);
-    } while (unit->next);
+    list_foreach(&ENEMIES, render_enemy_unit);
+    list_foreach(&FRIENDLIES, render_friendly_unit);
+}
+
+void add_friendly_unit(const unit_t *unit)
+{
+    list_append(&FRIENDLIES, (void *)unit);
+}
+
+void add_enemy_unit(const unit_t *unit)
+{
+    list_append(&ENEMIES, (void *)unit);
+}
+
+void units_cleanup(void)
+{
+    list_clear(&FRIENDLIES);
+    list_clear(&ENEMIES);
 }

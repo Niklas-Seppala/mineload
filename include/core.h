@@ -1,6 +1,7 @@
 #ifndef CORE_H
 #define CORE_H
 #include <stdlib.h>
+#include <raylib.h>
 
 void *OOM_GUARD(void *object);
 
@@ -10,8 +11,17 @@ struct node
     struct node *next;
 };
 
+#define SCREEN_MIDDLE_POINT_V2 (Vector2) { \
+    .x = GetScreenWidth() / 2.0f, \
+    .y = GetScreenHeight() / 2.0f \
+}
+
 #define HEAP_VALUES 1
 #define STACK_VALUES 2
+
+#define COLOR_GREEN LIME
+#define COLOR_RED MAROON
+#define COLOR_YELLOW GOLD
 
 #define LIST_FIND_PRIM(cast) \
 bool pred_##cast(void *item, void *arg) { return *(cast*)item == *(cast*)arg; }
@@ -49,9 +59,15 @@ struct list
 };
 void *list_pop(struct list *list, void *item);
 void list_append(struct list *list, void *item);
-void list_foreach(struct list *list, void (*cb)(void *item));
+void list_foreach(const struct list *list, void (*cb)(void *item));
 void *list_find(struct list *list, void *target, bool (*pred)(void *item, void *arg));
 void list_clear(struct list *list);
+
+
+void init(void);
+void input(Vector2 *pos);
+void render(void);
+void clean(void);
 
 
 #endif // CORE_H
