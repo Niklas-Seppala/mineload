@@ -8,11 +8,12 @@ OUT=./out/
 SRC=./src/
 
 build: objects
-	${CC} units.o core.o main.o -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -o game
+	${CC} player.o units.o core.o main.o -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -o game
 	mv ./*.o ${OBJ}
 	mv ./game ${OUT}
 
 objects:
+	${CC} ${OFLAGS} ${HEADERS} ${DEBUG} ${SRC}player.c -o player.o
 	${CC} ${OFLAGS} ${HEADERS} ${DEBUG} ${SRC}units.c -o units.o
 	${CC} ${OFLAGS} ${HEADERS} ${DEBUG} ${SRC}core.c -o core.o
 	${CC} ${OFLAGS} ${HEADERS} ${DEBUG} ${SRC}main.c -o main.o

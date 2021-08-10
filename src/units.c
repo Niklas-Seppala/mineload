@@ -8,8 +8,8 @@ static struct list ENEMIES;
 
 void units_init(void)
 {
-    FRIENDLIES = (struct list) {.memory_flag = HEAP_VALUES};
-    ENEMIES = (struct list) {.memory_flag = HEAP_VALUES};
+    FRIENDLIES = (struct list){.memory_flag = HEAP_VALUES};
+    ENEMIES = (struct list){.memory_flag = HEAP_VALUES};
 }
 
 static void render_enemy_unit(void *u)
@@ -34,14 +34,12 @@ void render_units(void)
     list_foreach(&FRIENDLIES, render_friendly_unit);
 }
 
-void add_friendly_unit(const unit_t *unit)
+void unit_add(const unit_t *unit)
 {
-    list_append(&FRIENDLIES, (void *)unit);
-}
-
-void add_enemy_unit(const unit_t *unit)
-{
-    list_append(&ENEMIES, (void *)unit);
+    if (unit->tags & UNIT_ENEMY)
+        list_append(&ENEMIES, (void *)unit);
+    else
+        list_append(&FRIENDLIES, (void *)unit);
 }
 
 void units_cleanup(void)

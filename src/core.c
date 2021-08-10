@@ -7,6 +7,8 @@
 #include "core.h"
 #include "units.h"
 
+struct vec2_const Vec2;
+
 void *OOM_GUARD(void *object)
 {
     if (object == NULL)
@@ -106,31 +108,31 @@ void *list_pop(struct list *list, void *item)
     return result;
 }
 
-
-void input(Vector2 *pos)
-{
-    if (IsKeyDown(KEY_RIGHT))
-        pos->x += 2.0f;
-    if (IsKeyDown(KEY_LEFT))
-        pos->x -= 2.0f;
-    if (IsKeyDown(KEY_UP))
-        pos->y -= 2.0f;
-    if (IsKeyDown(KEY_DOWN))
-        pos->y += 2.0f;
-}
-
 void init(void)
 {
-    InitWindow(1280, 720, "Mineload");
+    Vec2.up = (Vector2) { .x = 0.0f, .y = 1.0f};
+    Vec2.down = (Vector2) { .x = 0.0f, .y = -1.0f};
+    Vec2.left = (Vector2) { .x = -1.0f, .y = 0.0f};
+    Vec2.right = (Vector2) { .x = 1.0f, .y = 0.0f};
+    Vec2.zero = (Vector2) {0};
+
+    InitWindow(1024, 768, "Mineload");
     SetTargetFPS(60);
-    ToggleFullscreen();
+    // ToggleFullscreen();
     units_init();
+    player_init();
+}
+
+void update(void)
+{
+    player_update();
 }
 
 void render(void)
 {
     ClearBackground(BLACK);
     DrawText("move the ball with arrow keys", 10, 10, 20, WHITE);
+    render_player();
     render_units();
 }
 
