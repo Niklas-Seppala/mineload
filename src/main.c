@@ -1,9 +1,4 @@
-#include <raylib.h>
-#include <raymath.h>
-#include <stdio.h>
-
-#include "units.h"
-#include "core.h"
+#include "game.h"
 
 int main(const int argc, const char **argv)
 {

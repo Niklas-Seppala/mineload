@@ -1,15 +1,14 @@
-#include <raylib.h>
-#include <stdlib.h>
 #include "units.h"
 #include "core.h"
+#include "data/list.h"
 
-static struct list FRIENDLIES;
-static struct list ENEMIES;
+static struct list *FRIENDLIES;
+static struct list *ENEMIES;
 
 void units_init(void)
 {
-    FRIENDLIES = (struct list){.memory_flag = HEAP_VALUES};
-    ENEMIES = (struct list){.memory_flag = HEAP_VALUES};
+    FRIENDLIES = list_create(HEAP_VALUES);
+    ENEMIES = list_create(HEAP_VALUES);
 }
 
 static void render_enemy_unit(void *u)
@@ -30,20 +29,20 @@ static void render_friendly_unit(void *u)
 
 void render_units(void)
 {
-    list_foreach(&ENEMIES, render_enemy_unit);
-    list_foreach(&FRIENDLIES, render_friendly_unit);
+    list_foreach(ENEMIES, render_enemy_unit);
+    list_foreach(FRIENDLIES, render_friendly_unit);
 }
 
 void unit_add(const unit_t *unit)
 {
     if (unit->tags & UNIT_ENEMY)
-        list_append(&ENEMIES, (void *)unit);
+        list_append(ENEMIES, (void *)unit);
     else
-        list_append(&FRIENDLIES, (void *)unit);
+        list_append(FRIENDLIES, (void *)unit);
 }
 
 void units_cleanup(void)
 {
-    list_clear(&FRIENDLIES);
-    list_clear(&ENEMIES);
+    list_free(&FRIENDLIES);
+    list_free(&ENEMIES);
 }

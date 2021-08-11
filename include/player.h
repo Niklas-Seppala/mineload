@@ -1,6 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include <raylib.h>
+#include "core.h"
 
 struct player
 {
@@ -9,19 +9,32 @@ struct player
     int health;
     Vector2 speed;
     Vector2 position;
-    int direction;
     bool visible;
 };
 typedef struct player player_t;
 
- struct drill
+
+#define PROJECTILE_LASER 0x1
+#define PROJECTILE_BULLET 0x2
+
+struct projectile
+{
+    Vector2 position;
+    Vector2 launch_direction;
+    float SPEED;
+    double timestamp;
+    double lifetime;
+};
+typedef struct projectile projectile_t;
+
+struct gun
 {
     Vector2 position;
     Vector2 size;
     Vector2 DRAW_OFFSET;
-    int direction;
+    int projectile;
 };
-typedef struct drill drill_t;
+typedef struct gun gun_t;
 
 void player_cleanup(void);
 void player_init(void);

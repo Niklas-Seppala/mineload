@@ -1,20 +1,22 @@
-#include <raymath.h>
+#include "data/queue.h"
 #include "player.h"
 #include "core.h"
 
 static struct player PLAYER;
-static struct drill DRILL;
+static struct gun GUN;
+static double PROJECTILE_TIME = 0;
+static struct queue *PROJECTILES;
 
 static struct input
 {
     Vector2 wasd;
-    Vector2 mouse;
-    int direction;
+    Vector2 mouse_pos;
+    bool mouse_click;
 } INPUT;
 
-static void update_mouse_direction(float angle);
-static void update_drill(float drill_dist);
+static void update_gun(float gun_dist);
 static void input(void);
+static void render_projectile(void *item);
 
 void player_spawn(Vector2 position)
 {
@@ -27,33 +29,56 @@ void render_player(void)
     if (PLAYER.visible)
     {
         DrawCircleV(PLAYER.position, 40, COLOR_YELLOW);
-        DrawRectangleV(DRILL.position, DRILL.size, COLOR_RED);
+        DrawRectangleV(GUN.position, GUN.size, COLOR_RED);
 
 #ifdef DEBUG
         DrawCircleV(PLAYER.position, 5, COLOR_RED);
 #endif
     }
+    queue_foreach(PROJECTILES, render_projectile);
 }
 
 void player_despawn(void)
 {
-    PLAYER.position = Vec2.zero;
+    PLAYER.position = Vector2Zero();
     PLAYER.visible = false;
 }
 
 void player_init(void)
 {
-    DRILL.size.x = 20.0f;
-    DRILL.size.y = 20.0f;
-    DRILL.DRAW_OFFSET = (Vector2){-DRILL.size.x / 2.0f, -DRILL.size.y / 2.0f};
+    GUN.size.x = 20.0f;
+    GUN.size.y = 20.0f;
+    GUN.DRAW_OFFSET = (Vector2){-GUN.size.x / 2.0f, -GUN.size.y / 2.0f};
+    PROJECTILES = queue_create(10, sizeof(struct projectile), STATIC_DATASTUCT);
+}
+
+static void render_projectile(void *item)
+{
+    struct projectile *p = item;
+    DrawCircleV(p->position, 5, COLOR_RED);
+}
+
+void update_projectile(void *item)
+{
+    struct projectile *p = item;
+    if (PROJECTILE_TIME > p->timestamp + p->lifetime)
+    {
+        queue_discard(PROJECTILES);
+    }
+    else
+    {
+        p->position.x -= p->launch_direction.x;
+        p->position.y -= p->launch_direction.y;
+    }
 }
 
 void player_update(void)
 {
+    PROJECTILE_TIME = GetTime();
     input();
+    update_gun(60.0f);
     PLAYER.position = Vector2Add(PLAYER.position, INPUT.wasd);
-    PLAYER.direction = INPUT.direction;
-    update_drill(60.0f);
+    queue_foreach(PROJECTILES, update_projectile);
 }
 
 Vector2 player_get_position_VALUE(void)
@@ -65,60 +90,49 @@ void player_cleanup(void) {}
 
 static void input(void)
 {
-    INPUT.wasd = Vec2.zero;
-    INPUT.mouse = GetMousePosition();
-
+    INPUT.wasd = Vector2Zero();
+    INPUT.mouse_pos = GetMousePosition();
+    INPUT.mouse_click = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
     if (IsKeyDown(KEY_D))
     {
-        INPUT.direction = RIGHT;
         INPUT.wasd.x += 4;
     }
-    else if (IsKeyDown(KEY_A))
+    if (IsKeyDown(KEY_A))
     {
-        INPUT.direction = LEFT;
         INPUT.wasd.x -= 4;
     }
-    else if (IsKeyDown(KEY_W))
+    if (IsKeyDown(KEY_W))
     {
-        INPUT.direction = UP;
         INPUT.wasd.y -= 4;
     }
-    else if (IsKeyDown(KEY_S))
+    if (IsKeyDown(KEY_S))
     {
-        INPUT.direction = DOWN;
         INPUT.wasd.y += 4;
     }
 }
 
-static void update_mouse_direction(float angle)
+static void update_gun(float gun_dist)
 {
-    if (angle < 45 || angle > 315)
-    {
-        DRILL.direction = RIGHT;
-    }
-    else if (angle < 315 && angle > 225)
-    {
-        DRILL.direction = UP;
-    }
-    else if (angle < 225 && angle > 135)
-    {
-        DRILL.direction = LEFT;
-    }
-    else
-    {
-        DRILL.direction = DOWN;
-    }
-}
-
-static void update_drill(float drill_dist)
-{
-    float mouse_angle = Vector2Angle(PLAYER.position, INPUT.mouse);
-    update_mouse_direction(mouse_angle);
-
-    float mouse_d_x = INPUT.mouse.x - PLAYER.position.x;
-    float mouse_d_y = INPUT.mouse.y - PLAYER.position.y;
+    float mouse_d_x = INPUT.mouse_pos.x - PLAYER.position.x;
+    float mouse_d_y = INPUT.mouse_pos.y - PLAYER.position.y;
     float mouse_dist = sqrtf((mouse_d_x * mouse_d_x) + (mouse_d_y * mouse_d_y));
-    DRILL.position.x = PLAYER.position.x + mouse_d_x / mouse_dist * drill_dist;
-    DRILL.position.y = PLAYER.position.y + mouse_d_y / mouse_dist * drill_dist;
-    DRILL.position = Vector2Add(DRILL.position, DRILL.DRAW_OFFSET);
+    GUN.position.x = PLAYER.position.x + mouse_d_x / mouse_dist * gun_dist;
+    GUN.position.y = PLAYER.position.y + mouse_d_y / mouse_dist * gun_dist;
+    GUN.position = Vector2Add(GUN.position, GUN.DRAW_OFFSET);
+
+    if (INPUT.mouse_click)
+    {
+        struct projectile p;
+        p.SPEED = 14.0f;
+        p.launch_direction = Vector2Subtract(GUN.position,
+            Vector2MoveTowards(GUN.position, INPUT.mouse_pos, p.SPEED));
+        p.lifetime = 2;
+        p.timestamp = GetTime();
+        p.position = GUN.position;
+        if (!queue_has_space(PROJECTILES))
+        {
+            queue_discard(PROJECTILES);
+        }
+        queue_enqueue(PROJECTILES, (void *)&p);
+    }
 }
