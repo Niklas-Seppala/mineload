@@ -2,28 +2,41 @@ CC=gcc
 DEBUG=-g -DDEBUG
 OFLAGS=-Wall -Wshadow -c
 HEADERS=-Iinclude
+RAYLIB:=-lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+GAME_TITLE:=mineload
 
-OBJ=./obj/
-OUT=./out/
-SRC=./src/
+COMPLETE_PRINT = \033[1;32mBuild Complete\033[0m
+MODULE_PRINT = \033[0;34m$@\033[0m
 
-build: objects
-	${CC} string.o queue.o list.o player.o units.o core.o game.o main.o -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -o game
-	mv ./*.o ${OBJ}
-	mv ./game ${OUT}
+OBJ_DIR=./obj/
+OUT_DIR=./out/
+SRC_DIR := ./src/
 
-objects:
-	${CC} ${OFLAGS} ${HEADERS} ${DEBUG} ${SRC}player.c -o player.o
-	${CC} ${OFLAGS} ${HEADERS} ${DEBUG} ${SRC}list.c -o list.o
-	${CC} ${OFLAGS} ${HEADERS} ${DEBUG} ${SRC}queue.c -o queue.o
-	${CC} ${OFLAGS} ${HEADERS} ${DEBUG} ${SRC}string.c -o string.o
-	${CC} ${OFLAGS} ${HEADERS} ${DEBUG} ${SRC}units.c -o units.o
-	${CC} ${OFLAGS} ${HEADERS} ${DEBUG} ${SRC}core.c -o core.o
-	${CC} ${OFLAGS} ${HEADERS} ${DEBUG} ${SRC}game.c -o game.o
-	${CC} ${OFLAGS} ${HEADERS} ${DEBUG} ${SRC}main.c -o main.o
+SRC_FILES := $(wildcard ${SRC_DIR}*.c)
+SRC := $(SRC_FILES:${SRC_DIR}%=%)
+OBJS := $(SRC:%.c=%.o)
+BINS := $(SRC:%.c=%)
+
+build: ${BINS}
+	@echo -e "Linking..."
+	@${CC} ${OBJS} ${RAYLIB} -o ${OUT_DIR}${GAME_TITLE}
+	@mv ./*.o ${OBJ_DIR}
+	@echo -e "$(COMPLETE_PRINT)"
+
+	@echo -e "Execute:"
+	@echo "    ${OUT_DIR}${GAME_TITLE}"
+	@echo "    make run"
+
+%.o: ${SRC_DIR}%.c
+	@echo -e "Compiling module: $(MODULE_PRINT)."
+	@${CC} ${OFLAGS} ${HEADERS} ${DEBUG} $< -o $@
+	
+
+%: %.o
+	
 
 clean:
-	rm $(OBJ)* $(OUT)* *.o
+	@rm $(OBJ_DIR)* $(OUT_DIR)* *.o 2>/dev/null || true
 
 run:
-	./out/game
+	./out/mineload

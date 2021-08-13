@@ -5,26 +5,13 @@
 static struct list *FRIENDLIES;
 static struct list *ENEMIES;
 
+static void render_enemy_unit(void *u);
+static void render_friendly_unit(void *u);
+
 void units_init(void)
 {
     FRIENDLIES = list_create(HEAP_VALUES);
     ENEMIES = list_create(HEAP_VALUES);
-}
-
-static void render_enemy_unit(void *u)
-{
-    unit_t *unit = u;
-    unit->position.x += 1.0f;
-    unit->position.y += 1.0f;
-    DrawCircleV(unit->position, 30, COLOR_RED);
-}
-
-static void render_friendly_unit(void *u)
-{
-    unit_t *unit = u;
-    unit->position.x -= 1.0f;
-    unit->position.y -= 1.0f;
-    DrawCircleV(unit->position, 30, COLOR_GREEN);
 }
 
 void render_units(void)
@@ -45,4 +32,20 @@ void units_cleanup(void)
 {
     list_free(&FRIENDLIES);
     list_free(&ENEMIES);
+}
+
+static void render_enemy_unit(void *u)
+{
+    unit_t *unit = u;
+    unit->position.x += 1.0f;
+    unit->position.y += 1.0f;
+    DrawCircleV(unit->position, 30, COLOR_RED);
+}
+
+static void render_friendly_unit(void *u)
+{
+    unit_t *unit = u;
+    unit->position.x -= 1.0f;
+    unit->position.y -= 1.0f;
+    DrawCircleV(unit->position, 30, COLOR_GREEN);
 }

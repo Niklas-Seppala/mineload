@@ -33,10 +33,11 @@ void list_print_debug(void *item) \
 
 struct list;
 struct list *list_create(int flag);
-void *list_pop(struct list *list, void *item);
+void list_pop(struct list *list, void *item);
 void list_append(struct list *list, void *item);
 void list_foreach(const struct list *list, void (*cb)(void *item));
 void *list_find(struct list *list, void *target, bool (*pred)(void *item, void *arg));
+void list_foreach_arg1(const struct list *list, const void* arg, void (*cb)(const void *arg, void *item));
 void list_clear(struct list *list);
 void list_free(struct list **list);
 

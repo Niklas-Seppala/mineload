@@ -54,7 +54,6 @@ void list_free(struct list **list)
     *list = NULL;
 }
 
-
 void list_clear(struct list *list)
 {
     struct node *current = list->head.next;
@@ -80,14 +79,27 @@ void list_foreach(const struct list *list, void (*cb)(void *item))
     struct node *current = list->head.next;
     while (current)
     {
+        // Take a safe copy of next, in case of current destruction.
+        struct node *next = current->next;
         cb(current->value);
-        current = current->next;
+        current = next;
     }
 }
 
-void *list_pop(struct list *list, void *item)
+void list_foreach_arg1(const struct list *list, const void* arg, void (*cb)(const void *arg, void *item))
 {
-    void *result = NULL;
+    struct node *current = list->head.next;
+    while (current)
+    {
+        // Take a safe copy of next, in case of current destruction.
+        struct node *next = current->next;
+        cb(arg, current->value);
+        current = next;
+    }
+}
+
+void list_pop(struct list *list, void *item)
+{
     struct node *prev = &(list->head);
     struct node *current = list->head.next;
     struct node *next = NULL;
@@ -96,7 +108,6 @@ void *list_pop(struct list *list, void *item)
     {
         if (((struct unit *)current->value) == item)
         {
-            result = current->value;
             next = current->next;
 
             free(current);
@@ -106,8 +117,7 @@ void *list_pop(struct list *list, void *item)
             list->size--;
             break;
         }
-        current = current->next;
         prev = current;
+        current = current->next;
     }
-    return result;
 }
