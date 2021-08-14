@@ -20,6 +20,7 @@ void gun_init(void)
     GUN.size.x = 20.0f;
     GUN.size.y = 20.0f;
     GUN.DRAW_OFFSET = (Vector2){-GUN.size.x / 2.0f, -GUN.size.y / 2.0f};
+    GUN.projectile = PROJECTILE_TYPE_2;
 }
 
 void gun_update(void)

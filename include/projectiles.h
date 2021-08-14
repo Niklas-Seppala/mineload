@@ -5,6 +5,9 @@
 struct projectile;
 typedef struct projectile projectile_t;
 
+#define PROJECTILE_TYPE_1       1
+#define PROJECTILE_TYPE_2       2
+
 void projectiles_init(void);
 void projectiles_update(void);
 void projectiles_render(void);

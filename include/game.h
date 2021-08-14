@@ -6,6 +6,7 @@
 #include "player/gun.h"
 #include "objects.h"
 #include "projectiles.h"
+#include "camera.h"
 
 void init(void);
 void render(void);

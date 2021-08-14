@@ -12,9 +12,7 @@ int main(const int argc, const char **argv)
         input();
         input_mouseclick();
         update();
-        BeginDrawing();
         render();
-        EndDrawing();
     }
     clean();
     CloseWindow();

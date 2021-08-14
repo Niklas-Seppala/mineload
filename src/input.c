@@ -1,4 +1,5 @@
 #include "input.h"
+#include "camera.h"
 
 static struct input
 {
@@ -6,7 +7,6 @@ static struct input
     Vector2 mouse_pos;
     bool mouseclick;
 } INPUT;
-
 
 Vector2 input_wasd(void)
 {
@@ -26,7 +26,7 @@ bool input_mouseclick(void)
 void input(void)
 {
     INPUT.wasd = Vector2Zero();
-    INPUT.mouse_pos = GetMousePosition();
+    INPUT.mouse_pos = camera_get_screen_to_world(GetMousePosition());
     INPUT.mouseclick = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
     if (IsKeyDown(KEY_D))
     {

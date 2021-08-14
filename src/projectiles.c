@@ -1,13 +1,28 @@
 #include "projectiles.h"
 #include "objects.h"
 
-#define MAX_PROJECTILE_COUNT 20
-#define PROJ_SPEED 15.0f
+/**********************************
+ --------------------------------
+ |      PROJECTILE TYPE_1       |
+ --------------------------------
+*********************************/
+#define TYPE_1_SPEED 15.0f
+#define TYPE_1_SIZE  5
+#define TYPE_1_COLOR COLOR_RED
+/*********************************/
 
-static void render_projectile(const struct projectile *p);
-static void update_projectile(struct projectile *p);
-static void add_projectile(const struct projectile *p);
-static unsigned int get_next_id(void);
+
+/**********************************
+ --------------------------------
+ |      PROJECTILE TYPE_2       |
+ --------------------------------
+ *********************************/
+#define TYPE_2_SPEED 15.0f
+#define TYPE_2_SIZE  5
+#define TYPE_2_COLOR COLOR_GREEN
+/*********************************/
+
+#define MAX_PROJECTILE_COUNT 20
 
 struct projectile
 {
@@ -17,7 +32,16 @@ struct projectile
     double lifetime;
     bool is_active;
     unsigned int id;
+    int type;
 };
+
+static void render_projectile(const struct projectile *p);
+static void update_projectile(struct projectile *p);
+static void add_projectile(const struct projectile *p);
+static float get_projectile_speed(const int TYPE);
+static int get_projectile_size(const int TYPE);
+static Color get_projectile_color(const int TYPE);
+static unsigned int get_next_id(void);
 
 static double PROJECTILE_TIME = 0;
 static unsigned int P_ID = 0;
@@ -56,10 +80,12 @@ void projectiles_cleanup(void)
 
 void projectiles_create(const Vector2 launch, const Vector2 target, const int type)
 {
+    const float SPEED = get_projectile_speed(type);
     struct projectile p;
     vec2_dir_normal(&launch, &target, &p.speed);
-    p.speed.x *= PROJ_SPEED;
-    p.speed.y *= PROJ_SPEED;
+    p.speed.x *= SPEED;
+    p.speed.y *= SPEED;
+    p.type = type;
     p.lifetime = 2;
     p.timestamp = GetTime();
     p.position = launch;
@@ -79,12 +105,14 @@ static void add_projectile(const struct projectile *p)
             break;
         }
     }
-    printf("%u\n", projectile_count);
 }
 
 static void render_projectile(const struct projectile *p)
 {
-    DrawCircleV(p->position, 5, COLOR_ORANGE);
+    const Color COLOR = get_projectile_color(p->type);
+    const int SIZE = get_projectile_size(p->type);
+
+    DrawCircleV(p->position, SIZE, COLOR);
 }
 
 static void update_projectile(struct projectile *p)
@@ -101,7 +129,6 @@ static void update_projectile(struct projectile *p)
     }
     if (objects_check_damage_collisions(p->position))
     {
-        printf("COLLISION\n");
         p->is_active = false;
         projectile_count--;
     }
@@ -110,4 +137,34 @@ static void update_projectile(struct projectile *p)
 static unsigned int get_next_id()
 {
     return P_ID++;
+}
+
+static float get_projectile_speed(const int TYPE)
+{
+    switch (TYPE)
+    {
+    case PROJECTILE_TYPE_1: return TYPE_1_SPEED;
+    case PROJECTILE_TYPE_2: return TYPE_2_SPEED;
+    default:                return -1;
+    }
+}
+
+static int get_projectile_size(const int TYPE)
+{
+    switch (TYPE)
+    {
+    case PROJECTILE_TYPE_1: return TYPE_1_SIZE;
+    case PROJECTILE_TYPE_2: return TYPE_2_SIZE;
+    default:                return -1;
+    }
+}
+
+static Color get_projectile_color(const int TYPE)
+{
+    switch (TYPE)
+    {
+    case PROJECTILE_TYPE_1: return TYPE_1_COLOR;
+    case PROJECTILE_TYPE_2: return TYPE_2_COLOR;
+    default:                return (Color) {0};
+    }
 }
