@@ -22,13 +22,13 @@ void objects_render(void)
 void objects_init(void)
 {
     STATIC_OBJECTS = list_create(HEAP_VALUES);
-    for (int i = 0; i < 50; i++)
-    {
-        struct game_object *o= OOM_GUARD(calloc(1, sizeof(struct game_object)));
-        o->position = (Vector2) {(rand() % 10 + 1) * 100, (rand() % 10 + 1) * 100};
-        o->health = 1;
-        list_append(STATIC_OBJECTS, o);
-    }
+    // for (int i = 0; i < 50; i++)
+    // {
+    //     struct game_object *o= OOM_GUARD(calloc(1, sizeof(struct game_object)));
+    //     o->position = (Vector2) {(rand() % 10 + 1) * 100, (rand() % 10 + 1) * 100};
+    //     o->health = 1;
+    //     list_append(STATIC_OBJECTS, o);
+    // }
 }
 
 void objects_cleanup(void)

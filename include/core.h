@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <raylib.h>
 #include <raymath.h>
+#include <inttypes.h>
 #include "data/string.h"
 #ifdef DEBUG
 #include <stdio.h>
@@ -33,9 +34,15 @@ void *OOM_GUARD(void *ptr);
     .y = GetScreenHeight() / 2.0f \
 }
 
+#define ROTATION_ZERO (float)0
+
+#define absolute(value) (value < 0 ? value * -1 : value)
+#define clamp(value, max) (value > max ? max : value)
+
 
 void vec2_dir_normal(const Vector2 *a, const Vector2 *b, Vector2 *out);
 
+#define inc_wrap_min(i, min, max) (i + 1) < max ? i+1 : min
 #define inc_wrap(index, max) (index + 1) % max
 #define dec_wrap(index, max) (index - 1) < 0 ? max-1 : index - 1
 #define index_raw(addr, i, n_bytes) addr + n_bytes * i

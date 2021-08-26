@@ -1,19 +1,18 @@
 #include "game.h"
 
-#define SCREEN_START_WIDTH 1024
-#define SCREE_START_HEIGHT 768
-
-static Camera2D *CAMERA;
+static const Camera2D *CAMERA;
 
 void init(void)
 {
     InitWindow(SCREEN_START_WIDTH, SCREE_START_HEIGHT, "Mineload");
     SetTargetFPS(60);
+
+    map_init();
     units_init();
     player_init();
 
-    const Vector2 PLAYER_POS = player_get_position();
-    CAMERA = camera_init(PLAYER_POS, SCREEN_START_WIDTH, SCREE_START_HEIGHT);
+    CAMERA = camera_init(player_get_position(),
+         SCREEN_START_WIDTH, SCREE_START_HEIGHT);
 
     gun_init();
     projectiles_init();
@@ -22,8 +21,10 @@ void init(void)
 
 void update(void)
 {
+    float delta_time = GetFrameTime();
     input();
-    player_update();
+    map_update();
+    player_update(delta_time);
     camera_update(player_get_position());
     gun_update();
     projectiles_update();
@@ -36,6 +37,7 @@ void render(void)
     ClearBackground(BLACK);
 
     BeginMode2D(*CAMERA);
+        map_render();
         render_player();
         gun_render();
         render_units();
@@ -43,12 +45,16 @@ void render(void)
         projectiles_render();
     EndMode2D();
 
-    DrawText("move the ball with arrow keys", 10, 10, 20, COLOR_LIGHT_BLUE);
+    #ifdef DEBUG
+    DrawFPS(SCREEN_START_WIDTH - 100, 10);
+    #endif
+    camera_ui_render();
     EndDrawing();
 }
 
 void clean(void)
 {
+    map_cleanup();
     units_cleanup();
     objects_cleanup();
     projectiles_cleanup();

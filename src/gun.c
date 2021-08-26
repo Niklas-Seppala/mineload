@@ -5,7 +5,7 @@
 
 static struct gun GUN;
 
-#define GUN_DISTANCE 50
+#define GUN_DISTANCE 70
 
 struct gun
 {
@@ -45,5 +45,5 @@ void gun_update(void)
 
 void gun_render(void)
 {
-    DrawRectangleV(GUN.position, GUN.size, COLOR_RED);
+    DrawRectangleV(GUN.position, GUN.size, COLOR_GREEN);
 }

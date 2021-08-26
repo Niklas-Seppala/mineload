@@ -6,11 +6,9 @@
 int main(const int argc, const char **argv)
 {
     init();
-    player_spawn(SCREEN_MIDDLE_POINT);
+    player_spawn(Vector2Zero());
     while (!WindowShouldClose())
     {
-        input();
-        input_mouseclick();
         update();
         render();
     }
