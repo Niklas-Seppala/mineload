@@ -15,8 +15,8 @@ struct parallax_layer
     float distances_from_p[LAYER_INSTANCE_COUNT];
     float speed;
     Texture2D texture;
-    float scaled_texture_width;
-    float scaled_texture_height;
+    float stexture_width;
+    float stexture_height;
     Color tint;
 };
 
@@ -30,9 +30,9 @@ static float obj_center_x(Vector2 instance, float layer_width);
 static void update_l_instances(struct parallax_layer *layer);
 static bool background_is_active(void);
 
-void parallax_init(int n, const struct para_l_constr *l_protos, int scale)
+void parallax_init(int n, const struct layer_proto *l_protos, int scale)
 {
-    PLAYER_POS = player_get_position();
+    PLAYER_POS = player_get_pos();
     SCALE = (float)scale;
     PARALLAX_LAYER_COUNT = n;
     LAYERS = OOM_GUARD(calloc(n, sizeof(struct parallax_layer)));
@@ -41,16 +41,24 @@ void parallax_init(int n, const struct para_l_constr *l_protos, int scale)
         LAYERS[i].texture = LoadTexture(l_protos[i].texture);
         LAYERS[i].speed = l_protos[i].speed;
         LAYERS[i].tint = l_protos[i].tint;
-        LAYERS[i].scaled_texture_width = LAYERS[i].texture.width * SCALE;
-        LAYERS[i].scaled_texture_height = LAYERS[i].texture.height * SCALE;
-        LAYERS[i].positions[0] = (Vector2) { PLAYER_POS.x - LAYERS[i].scaled_texture_width, l_protos[i].y_offset };
-        LAYERS[i].positions[1] = (Vector2) { PLAYER_POS.x, l_protos[i].y_offset };
+        LAYERS[i].stexture_width = LAYERS[i].texture.width * SCALE;
+        LAYERS[i].stexture_height = LAYERS[i].texture.height * SCALE;
+        LAYERS[i].positions[0] = (Vector2)
+        {
+            PLAYER_POS.x - LAYERS[i].stexture_width,
+            l_protos[i].y_offset
+        };
+        LAYERS[i].positions[1] = (Vector2)
+        {
+            PLAYER_POS.x,
+            l_protos[i].y_offset
+        };
     }
 }
 
 void parallax_update(void)
 {
-    PLAYER_POS = player_get_position();
+    PLAYER_POS = player_get_pos();
     PLAYER_SPEED = player_get_speed();
     if (background_is_active())
     {
@@ -60,15 +68,10 @@ void parallax_update(void)
             STATE = PARALLAX_STATE_ON;
             for (int i = 0; i < PARALLAX_LAYER_COUNT; i++)
             {
-                #ifdef DEBUG
-                printf("LAYER: %d\n", i);
-                #endif
                 for (int j = 0; j < LAYER_INSTANCE_COUNT; j++)
                 {
-                    #ifdef DEBUG
-                    printf("\tINSTANCE: %d distance to p was: %f\n", j, LAYERS[i].distances_from_p[j]);
-                    #endif
-                    LAYERS[i].positions[j].x = PLAYER_POS.x + LAYERS[i].distances_from_p[j];
+                    LAYERS[i].positions[j].x = PLAYER_POS.x +
+                        LAYERS[i].distances_from_p[j];
                 }
             }
         }
@@ -114,7 +117,7 @@ void parallax_cleanup(void)
 
 static void update_l_instances(struct parallax_layer *layer)
 {
-    const float LAYER_TEXT_W = layer->scaled_texture_width;
+    const float LAYER_TEXT_W = layer->stexture_width;
     for (int i = 0; i < LAYER_INSTANCE_COUNT; i++)
     {
         const float INST_CENTER_P = obj_center_x(layer->positions[i], LAYER_TEXT_W);

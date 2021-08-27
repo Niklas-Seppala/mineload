@@ -1,4 +1,7 @@
+#include <stdarg.h>
 #include "debug.h"
+#include "ui.h"
+#include "data/queue.h"
 
 void debug_draw_rec_lines(const Rectangle *rec, Color color)
 {

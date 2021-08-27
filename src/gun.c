@@ -27,7 +27,7 @@ void gun_update(void)
 {
     const Vector2 MOUSE_POS = input_mouse_pos();
     const bool MOUSE_CLICK = input_mouseclick();
-    const Vector2 PLAYER_POS = player_get_position();
+    const Vector2 PLAYER_POS = player_get_pos();
 
     float mouse_d_x = MOUSE_POS.x - PLAYER_POS.x;
     float mouse_d_y = MOUSE_POS.y - PLAYER_POS.y;

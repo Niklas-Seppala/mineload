@@ -11,16 +11,9 @@ static struct player
     int health;
     Vector2 speed;
     Vector2 position;
-    bool visible;
     bool can_jump;
     uint8_t state;
 } PLAYER;
-
-void player_spawn(Vector2 position)
-{
-    PLAYER.position = position;
-    PLAYER.visible = true;
-}
 
 uint8_t player_get_state(void)
 {
@@ -29,20 +22,9 @@ uint8_t player_get_state(void)
 
 void render_player(void)
 {
-    if (PLAYER.visible)
-    {
-        player_sprite_render();
-        #ifdef DEBUG
-        DrawCircleV(PLAYER.position, 2, COLOR_RED);
-        #endif
-    }
+    player_sprite_render();
 }
 
-void player_despawn(void)
-{
-    PLAYER.position = Vector2Zero();
-    PLAYER.visible = false;
-}
 
 static void update_state(void)
 {
@@ -51,13 +33,21 @@ static void update_state(void)
     {
         PLAYER.state |= PLAYER_STATE_JETPACK;
     }
+    if (PLAYER.speed.y < 0 || PLAYER.speed.y > 0)
+    {
+        PLAYER.state |= PLAYER_STATE_ON_AIR;
+    }
     if (PLAYER.speed.y > 0)
     {
-        PLAYER.state |= PLAYER_STATE_ON_FALLING;
+        PLAYER.state |= PLAYER_STATE_FALLING;
     }
     if (PLAYER.speed.x != 0)
     {
-        PLAYER.state |= PLAYER_STATE_ON_RUNNING;
+        PLAYER.state |= PLAYER_STATE_RUNNING;
+    }
+    if (input_drill())
+    {
+        PLAYER.state |= PLAYER_STATE_DRILL;
     }
 }
 
@@ -82,7 +72,7 @@ void player_update(float delta_time)
     player_sprite_update();
 }
 
-Vector2 player_get_position(void)
+Vector2 player_get_pos(void)
 {
     return PLAYER.position;
 }
@@ -110,6 +100,7 @@ bool player_moving_left(void)
 void player_init(void)
 {
     PLAYER.can_jump = true;
+    PLAYER.position = (Vector2){0};
     player_renderer_init();
 }
 

@@ -2,7 +2,7 @@
 #define PARALLAX_H
 #include "core.h"
 
-struct para_l_constr
+struct layer_proto
 {
     const char *texture;
     const float speed;
@@ -10,7 +10,7 @@ struct para_l_constr
     const float y_offset;
 };
 
-void parallax_init(int n, const struct para_l_constr *layers, int scale);
+void parallax_init(int n, const struct layer_proto *layers, int scale);
 void parallax_update(void);
 void parallax_render(void);
 void parallax_cleanup(void);

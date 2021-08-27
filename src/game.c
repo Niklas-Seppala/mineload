@@ -1,32 +1,27 @@
 #include "game.h"
 
-static const Camera2D *CAMERA;
-
 void init(void)
 {
     InitWindow(SCREEN_START_WIDTH, SCREE_START_HEIGHT, "Mineload");
     SetTargetFPS(60);
-
+    ui_init();
     map_init();
     units_init();
     player_init();
-
-    CAMERA = camera_init(player_get_position(),
-         SCREEN_START_WIDTH, SCREE_START_HEIGHT);
-
-    gun_init();
+    camera_init(player_get_pos(), SCREEN_START_WIDTH, SCREE_START_HEIGHT);
     projectiles_init();
     objects_init();
+    SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
 }
 
 void update(void)
 {
     float delta_time = GetFrameTime();
     input();
+    ui_update();
     map_update();
     player_update(delta_time);
-    camera_update(player_get_position());
-    gun_update();
+    camera_update(player_get_pos());
     projectiles_update();
     objects_update();
 }
@@ -34,21 +29,15 @@ void update(void)
 void render(void)
 {
     BeginDrawing();
-    ClearBackground(BLACK);
-
-    BeginMode2D(*CAMERA);
-        map_render();
-        render_player();
-        gun_render();
-        render_units();
-        objects_render();
-        projectiles_render();
-    EndMode2D();
-
-    #ifdef DEBUG
-    DrawFPS(SCREEN_START_WIDTH - 100, 10);
-    #endif
-    camera_ui_render();
+        ClearBackground(BLACK);
+        BeginMode2D(camera_get_camera());
+            map_render();
+            render_player();
+            render_units();
+            objects_render();
+            projectiles_render();
+        EndMode2D();
+        ui_render();
     EndDrawing();
 }
 

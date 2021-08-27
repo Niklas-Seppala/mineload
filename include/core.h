@@ -16,6 +16,7 @@
 #define LEFT  0x4
 #define RIGHT 0x8
 
+#define COLOR_BLACK BLACK
 #define COLOR_GREEN LIME
 #define COLOR_RED MAROON
 #define COLOR_YELLOW GOLD

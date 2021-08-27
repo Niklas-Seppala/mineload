@@ -1,12 +1,8 @@
 #include "game.h"
-#include "input.h"
-#include "data/list.h"
-#include "data/queue.h"
 
 int main(const int argc, const char **argv)
 {
     init();
-    player_spawn(Vector2Zero());
     while (!WindowShouldClose())
     {
         update();
@@ -14,5 +10,5 @@ int main(const int argc, const char **argv)
     }
     clean();
     CloseWindow();
-    return 0;
+    return EXIT_SUCCESS;
 }

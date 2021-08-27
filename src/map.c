@@ -82,7 +82,7 @@ static void render_tiles(void)
 
 static void create_bg(void)
 {
-    struct para_l_constr LAYERS[PARALLAX_LAYER_COUNT] =
+    struct layer_proto LAYERS[PARALLAX_LAYER_COUNT] =
     {
         {
             .texture = "res/sprites/BG.png",

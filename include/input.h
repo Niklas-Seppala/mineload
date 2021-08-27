@@ -10,5 +10,6 @@ Vector2 input_mouse_pos(void);
 bool input_mouseclick(void);
 bool input_space(void);
 bool input_moving_right(void);
+bool input_drill(void);
 
 #endif // INPUT_H

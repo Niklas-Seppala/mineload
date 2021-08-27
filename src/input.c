@@ -8,6 +8,7 @@ static struct input
     bool mouseclick;
     bool space;
     bool direction;
+    bool drill;
 } INPUT;
 
 Vector2 input_wasd(void)
@@ -18,6 +19,11 @@ Vector2 input_wasd(void)
 Vector2 input_mouse_pos(void)
 {
     return INPUT.mouse_pos;
+}
+
+bool input_drill(void)
+{
+    return INPUT.drill;
 }
 
 bool input_mouseclick(void)
@@ -33,6 +39,7 @@ bool input_space(void)
 void input(void)
 {
     INPUT.wasd = Vector2Zero();
+    INPUT.drill = false;
     INPUT.mouse_pos = camera_get_screen_to_world(GetMousePosition());
     INPUT.mouseclick = IsMouseButtonPressed(MOUSE_BUTTON_LEFT);
     INPUT.space = IsKeyDown(KEY_SPACE);
@@ -45,6 +52,10 @@ void input(void)
     {
         INPUT.direction = false;
         INPUT.wasd.x = -1;
+    }
+    if (IsKeyDown(KEY_S))
+    {
+        INPUT.drill = true;
     }
 }
 

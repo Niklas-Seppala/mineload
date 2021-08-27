@@ -3,11 +3,14 @@
 #include "core.h"
 #include "units.h"
 #include "input.h"
-#include "player/gun.h"
 #include "objects.h"
 #include "projectiles.h"
 #include "camera.h"
+#include "ui.h"
 #include "map.h"
+#ifdef DEBUG
+#include "debug.h"
+#endif
 
 #define SCREEN_START_WIDTH 1024
 #define SCREE_START_HEIGHT 768
