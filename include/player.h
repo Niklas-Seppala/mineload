@@ -9,6 +9,20 @@
 #define PLAYER_STATE_FALLING    0x10 // 5th
 #define PLAYER_STATE_DRILL      0x20 // 6th
 
+struct collision
+{
+    bool left, right, top, bottom;
+    bool happened;
+};
+struct colliders
+{
+    Rectangle top;
+    Rectangle bottom;
+    Rectangle left;
+    Rectangle right;
+    struct collision collision;
+};
+
 void player_cleanup(void);
 void player_init(void);
 void render_player(void);
@@ -19,5 +33,7 @@ bool player_moving_left(void);
 void player_update(float delta_time);
 uint8_t player_get_state(void);
 Vector2 player_get_speed(void);
+Rectangle player_get_bounds(void);
+struct colliders *player_get_colliders(void);
 
 #endif // PLAYER_H

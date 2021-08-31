@@ -115,6 +115,11 @@ void player_sprite_render(void)
 void player_renderer_cleanup(void) { }
 
 
+Rectangle player_sprite_get_bounds(void)
+{
+    return SPRITE.bounds;
+}
+
 static int map_state_to_frame(const uint8_t STATE)
 {
     if (STATE & PLAYER_STATE_JETPACK)
@@ -132,6 +137,10 @@ static int map_state_to_frame(const uint8_t STATE)
     if (STATE & PLAYER_STATE_RUNNING)
     {
         return move_anim(ANIM_RUN, ANIM_RUN_START, ANIM_RUN_END);
+    }
+    if (STATE & PLAYER_STATE_ON_GROUND)
+    {
+        return move_anim(ANIM_IDLE, ANIM_IDLE_START, ANIM_IDLE_END);
     }
     LATEST_ANIM = ANIM_UNDEFIND;
     #ifdef DEBUG
