@@ -67,7 +67,7 @@ bool queue_enqueue(struct queue *queue, const void *item)
         }
         else
         {
-            return false;
+            queue_discard(queue);
         }
     }
 

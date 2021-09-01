@@ -33,8 +33,13 @@ void ui_world_printf(const Vector2 position, int font_size, const Color color, c
     va_list args;
     va_start(args, format);
     vsnprintf(UI_TEXT_BUFFER, MAX_UI_TEX, format, args);
-    DrawTextEx(MAIN_FONT, UI_TEXT_BUFFER, camera_get_world_to_screen(position), font_size, 3, color);
+    DrawTextEx(MAIN_FONT, UI_TEXT_BUFFER, position, font_size, 3, color);
     va_end(args);
+}
+
+void ui_world_print(const Vector2 pos, int size, Color color, const char *text)
+{
+    DrawTextEx(MAIN_FONT, text, pos, size, 3, color);
 }
 
 void ui_update(void) {}
