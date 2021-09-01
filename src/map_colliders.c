@@ -57,7 +57,6 @@ static void check_collider_tile(const Rectangle *tile, const Rectangle *collider
     if (CheckCollisionRecs(*tile, *collider))
     {
         *result = true;
-        debug_draw_rec_lines(collider, COLOR_RED);
     }
 }
 
