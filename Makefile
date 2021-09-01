@@ -23,14 +23,9 @@ build: ${BINS}
 	@mv ./*.o ${OBJ_DIR}
 	@echo -e "$(COMPLETE_PRINT)"
 
-	@echo -e "Execute:"
-	@echo "    ${OUT_DIR}${GAME_TITLE}"
-	@echo "    make run"
-
 %.o: ${SRC_DIR}%.c
-	@echo -e "Compiling module: $(MODULE_PRINT)."
+	@echo -e "Compiling module $(MODULE_PRINT)"
 	@${CC} ${OFLAGS} ${HEADERS} ${DEBUG} $< -o $@
-	
 
 %: %.o
 	

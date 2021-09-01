@@ -68,7 +68,7 @@ static void update_speed(float delta_time)
     PLAYER.speed.y += GRAVITY * delta_time;
     PLAYER.speed.y = clamp(PLAYER.speed.y, GRAVITY_MAX_VELOCITY);
 
-    check_collisions(&PLAYER.colliders);
+    map_check_collisions(&PLAYER.colliders);
     if (PLAYER.colliders.collision.happened)
     {
         if (PLAYER.colliders.collision.top)

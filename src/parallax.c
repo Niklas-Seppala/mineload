@@ -3,7 +3,7 @@
 #include "input.h"
 #include "game.h"
 
-static int PARALLAX_LAYER_COUNT;
+static int P_LAYER_COUNT;
 static float SCALE;
 #define LAYER_INSTANCE_COUNT 2
 #define PARALLAX_STATE_ON 1
@@ -34,9 +34,9 @@ void parallax_init(int n, const struct layer_proto *l_protos, int scale)
 {
     PLAYER_POS = player_get_pos();
     SCALE = (float)scale;
-    PARALLAX_LAYER_COUNT = n;
+    P_LAYER_COUNT = n;
     LAYERS = OOM_GUARD(calloc(n, sizeof(struct parallax_layer)));
-    for (int i = 0; i < PARALLAX_LAYER_COUNT; i++)
+    for (int i = 0; i < P_LAYER_COUNT; i++)
     {
         LAYERS[i].texture = LoadTexture(l_protos[i].texture);
         LAYERS[i].speed = l_protos[i].speed;
@@ -66,7 +66,7 @@ void parallax_update(void)
         if (STATE == PARALLAX_STATE_PAUSED)
         {
             STATE = PARALLAX_STATE_ON;
-            for (int i = 0; i < PARALLAX_LAYER_COUNT; i++)
+            for (int i = 0; i < P_LAYER_COUNT; i++)
             {
                 for (int j = 0; j < LAYER_INSTANCE_COUNT; j++)
                 {
@@ -78,7 +78,7 @@ void parallax_update(void)
         else
         {
             // Update normally
-            for (int i = 0; i < PARALLAX_LAYER_COUNT; i++)
+            for (int i = 0; i < P_LAYER_COUNT; i++)
             {
                 update_l_instances(&LAYERS[i]);
             }
@@ -98,7 +98,7 @@ void parallax_render(void)
 {
     if (background_is_active())
     {
-        for (int i = 0; i < PARALLAX_LAYER_COUNT; i++)
+        for (int i = 0; i < P_LAYER_COUNT; i++)
         {
             for (int j = 0; j < LAYER_INSTANCE_COUNT; j++)
             {
