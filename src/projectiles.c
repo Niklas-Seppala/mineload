@@ -1,5 +1,4 @@
 #include "projectiles.h"
-#include "objects.h"
 
 /**********************************
  --------------------------------
@@ -126,11 +125,6 @@ static void update_projectile(struct projectile *p)
     {
         p->position.x += p->speed.x;
         p->position.y += p->speed.y;
-    }
-    if (objects_check_damage_collisions(p->position))
-    {
-        p->is_active = false;
-        projectile_count--;
     }
 }
 

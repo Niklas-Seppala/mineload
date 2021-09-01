@@ -5,9 +5,9 @@
 #include <raylib.h>
 #include <raymath.h>
 #include <inttypes.h>
-#include "data/string.h"
+#include <string.h>
 #ifdef DEBUG
-#include <stdio.h>
+#include "debug.h"
 #endif
 
 #define NONE  0x0

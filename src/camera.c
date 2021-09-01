@@ -17,8 +17,6 @@ void camera_init(Vector2 start, const int screen_w, const int screen_h)
     CAMERA.zoom = 1.0f;
 
     FONT = LoadFont("res/fonts/alpha_beta.png");
-
-    // return &CAMERA;
 }
 
 Camera2D camera_get_camera(void)

@@ -1,5 +1,8 @@
 #include "map/colliders.h"
 #include "player.h"
+#ifdef DEBUG
+// #define DEBUG_COLLIDERS
+#endif
 
 //-------------------------------------------//
 //--------------- PROTOTYPES ----------------//
@@ -57,7 +60,13 @@ static void check_collider_tile(const Rectangle *tile, const Rectangle *collider
     if (CheckCollisionRecs(*tile, *collider))
     {
         *result = true;
+        #ifdef DEBUG_COLLIDERS
+        debug_draw_rec_lines_anywhere(collider, COLOR_RED);
+        #endif
     }
+    #ifdef DEBUG_COLLIDERS
+    debug_draw_rec_lines_anywhere(tile, COLOR_GREEN);
+    #endif
 }
 
 static void check_player_tile_collision(const Rectangle *tile,

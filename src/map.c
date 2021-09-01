@@ -3,10 +3,6 @@
 #include "parallax.h"
 #include "map/colliders.h"
 
-#ifdef DEBUG
-// #define DEBUG_RENDER_COLLISIONS
-#endif
-
 #define TILE_SECTION_COUNT 6
 #define TERRAIN_TOP_MIDDLE 0
 #define TERRAIN_MIDDLE 1
@@ -40,18 +36,6 @@ void map_render(void)
 {
     parallax_render();
     render_tiles();
-
-    #ifdef DEBUG
-    #ifdef DEBUG_RENDER_COLLISIONS
-    struct colliders *pc = player_get_colliders();
-    struct colliders c;
-    c.bottom = pc->bottom;
-    c.left = pc->left;
-    c.right = pc->right;
-    c.top = pc->top;
-    map_check_collisions(&c);
-    #endif
-    #endif
 }
 
 
@@ -183,8 +167,10 @@ static void render_tiles(void)
         for (int x = 0; x < TERRAIN_MATRIX_X; x++)
         {
             if (MAP.TILE_MATRIX[y][x].active) {
-                DrawTexturePro(MAP.TERRAIN.SHEET, MAP.TERRAIN.SECTS[MAP.TILE_MATRIX[y][x].tile_type],
-                    MAP.TERRAIN.TILEFRAME, Vector2Zero(), ROTATION_ZERO, WHITE);
+                DrawTexturePro(MAP.TERRAIN.SHEET,
+                               MAP.TERRAIN.SECTS[MAP.TILE_MATRIX[y][x].tile_type],
+                               MAP.TERRAIN.TILEFRAME,
+                               Vector2Zero(), ROTATION_ZERO, WHITE);
             }
             MAP.TERRAIN.TILEFRAME.x += MAP.TERRAIN.TILEFRAME.width;
         }

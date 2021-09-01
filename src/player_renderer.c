@@ -2,7 +2,6 @@
 #include "player.h"
 
 #ifdef DEBUG
-#include "debug.h"
 // #define DEBUG_PLAYER_SPRITE
 #endif
 
@@ -106,11 +105,9 @@ void player_sprite_render(void)
     DrawTexturePro(ANIMATOR.spritesheet, ANIMATOR.frame, SPRITE.bounds,
         Vector2Zero(), ROTATION_ZERO, WHITE
     );
-    #ifdef DEBUG
     #ifdef DEBUG_PLAYER_SPRITE
     debug_draw_rec_lines(&SPRITE.bounds, COLOR_GREEN);
     DrawCircleV(player_get_pos(), 1, COLOR_GREEN);
-    #endif
     #endif
 }
 
@@ -146,7 +143,7 @@ static int map_state_to_frame(const uint8_t STATE)
     }
     LATEST_ANIM = ANIM_UNDEFIND;
     #ifdef DEBUG
-        printf("NO MATCHING PLAYER STATE MAPPED TO ANIMATION\n");
+    printf("NO MATCHING PLAYER STATE MAPPED TO ANIMATION\n");
     #endif
     return -1;
 }

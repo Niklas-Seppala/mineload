@@ -6,12 +6,14 @@ void init(void)
     SetTargetFPS(60);
     ui_init();
     map_init();
-    units_init();
     player_init();
     camera_init(player_get_pos(), SCREEN_START_WIDTH, SCREE_START_HEIGHT);
     projectiles_init();
-    objects_init();
     SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
+
+    #ifdef DEBUG
+    debug_init();
+    #endif
 }
 
 void update(void)
@@ -23,7 +25,6 @@ void update(void)
     player_update(delta_time);
     camera_update(player_get_pos());
     projectiles_update();
-    objects_update();
 }
 
 void render(void)
@@ -33,9 +34,11 @@ void render(void)
         BeginMode2D(camera_get_camera());
             map_render();
             render_player();
-            render_units();
-            objects_render();
             projectiles_render();
+
+            #ifdef DEBUG
+            debug_render();
+            #endif
         EndMode2D();
         ui_render();
     EndDrawing();
@@ -44,7 +47,8 @@ void render(void)
 void clean(void)
 {
     map_cleanup();
-    units_cleanup();
-    objects_cleanup();
     projectiles_cleanup();
+    #ifdef DEBUG
+    debug_cleanup();
+    #endif
 }

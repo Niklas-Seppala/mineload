@@ -87,49 +87,18 @@ int queue_get_count(const struct queue* q)
     return q->count;
 }
 
-void queue_pop(struct queue *queue, const void *search)
-{
-    const size_t SIZE = queue->ITEM_SIZE;
-    int index = queue->head_index;
-    char *array = queue->data;
-    char *search_addr = (char *)search;
-    do
-    {
-        char *current_addr = index_raw(array, index, SIZE);
-        if (strncmp(search_addr, current_addr, SIZE) == 0)
-        {
-            char *next_addr;
-            int next_index = inc_wrap(index, queue->CAPACITY);
-            while (next_index != queue->tail_index)
-            {
-                current_addr = index_raw(array, index, SIZE);
-                next_addr = index_raw(array, next_index, SIZE);
-
-                memcpy(current_addr, next_addr, SIZE);
-
-                index = inc_wrap(index, queue->CAPACITY);
-                next_index = inc_wrap(next_index, queue->CAPACITY);
-            }
-            queue->tail_index = dec_wrap(queue->tail_index, queue->CAPACITY);
-            queue->count--;
-            break;
-        }
-        index = inc_wrap(index, queue->CAPACITY);
-    } while(index != queue->tail_index);
-}
-
-
 bool queue_discard(struct queue *queue)
 {
     if (queue == NULL)
+    {
         return false;
-
+    }
     queue->head_index = (queue->head_index + 1) % queue->CAPACITY;
     queue->count--;
     return true;
 }
 
-bool queue_dequeue(struct queue *queue, char *out)
+bool queue_dequeue(struct queue *queue, void *out)
 {
     if (queue == NULL)
         return false;
