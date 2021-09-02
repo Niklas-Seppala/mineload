@@ -14,6 +14,9 @@ static struct map *MAP;
 static void render_tiles(void);
 static void create_bg(void);
 static void create_map(void);
+static inline void set_frame_to_zero(Rectangle *frame);
+static inline void move_frame_next_row(Rectangle *frame);
+static inline void move_frame_next_column(Rectangle *frame);
 
 
 //-------------------------------------------//
@@ -145,8 +148,7 @@ static void create_map(void)
 
 static void render_tiles(void)
 {
-    MAP->tiles.frame.x = MAP->ZERO.x;
-    MAP->tiles.frame.y = MAP->ZERO.y;
+    set_frame_to_zero(&MAP->tiles.frame);
     for (int y = 0; y < MAP_MATRIX_Y; y++)
     {
         for (int x = 0; x < MAP_MATRIX_X; x++)
@@ -158,9 +160,25 @@ static void render_tiles(void)
                                MAP->tiles.frame,
                                Vector2Zero(), ROTATION_ZERO, WHITE);
             }
-            MAP->tiles.frame.x += MAP->tiles.frame.width;
+            move_frame_next_column(&MAP->tiles.frame);
         }
-        MAP->tiles.frame.x = MAP->ZERO.x;
-        MAP->tiles.frame.y += MAP->tiles.frame.height;
+        move_frame_next_row(&MAP->tiles.frame);
     }
+}
+
+static inline void set_frame_to_zero(Rectangle *frame)
+{
+    frame->x = MAP->ZERO.x;
+    frame->y = MAP->ZERO.y;
+}
+
+static inline void move_frame_next_column(Rectangle *frame)
+{
+    frame->x += frame->width;
+}
+
+static inline void move_frame_next_row(Rectangle *frame)
+{
+    frame->x = MAP->ZERO.x;
+    frame->y += frame->height;
 }
