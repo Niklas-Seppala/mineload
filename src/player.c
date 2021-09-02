@@ -66,7 +66,7 @@ static void update_speed(float delta_time)
     }
     PLAYER.speed.x = input_wasd().x * PLAYER_RUN_SPEED * delta_time;
     PLAYER.speed.y += GRAVITY * delta_time;
-    PLAYER.speed.y = clamp(PLAYER.speed.y, GRAVITY_MAX_VELOCITY);
+    PLAYER.speed.y = clamp_max(PLAYER.speed.y, GRAVITY_MAX_VELOCITY);
 
     map_check_collisions(&PLAYER.colliders);
     if (PLAYER.colliders.collision.happened)

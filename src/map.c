@@ -4,6 +4,8 @@
 #include "map/colliders.h"
 
 #define TILE_SECTION_COUNT 6
+#define RENDER_X_PADDING 2
+#define RENDER_Y_PADDING 3
 
 // Map object instance for the game.
 static struct map *MAP;
@@ -14,10 +16,6 @@ static struct map *MAP;
 static void render_tiles(void);
 static void create_bg(void);
 static void create_map(void);
-static inline void set_frame_to_zero(Rectangle *frame);
-static inline void move_frame_next_row(Rectangle *frame);
-static inline void move_frame_next_column(Rectangle *frame);
-
 
 //-------------------------------------------//
 //-------- PUBLIC API IMPLEMENTATION --------//
@@ -36,6 +34,7 @@ void map_update(void)
 void map_render(void)
 {
     parallax_render();
+    // render_tiles();
     render_tiles();
 }
 
@@ -92,24 +91,9 @@ static void create_bg(void)
 {
     struct layer_proto LAYERS[PARALLAX_LAYER_COUNT] =
     {
-        {
-            .texture = "res/sprites/BG.png",
-            .speed = 0.99f,
-            .tint = WHITE,
-            .y_offset = -600.0f
-        },
-        {
-            .texture = "res/sprites/mountains.png",
-            .speed = 0.9f,
-            .tint = WHITE,
-            .y_offset = -40.0f
-        },
-        {
-            .texture = "res/sprites/mountains_close.png",
-            .speed = 0.7f,
-            .tint = WHITE,
-            .y_offset = 30.0f
-        },
+        {.texture = "res/sprites/BG.png", .speed = 0.99f, .tint = WHITE, .y_offset = -600.0f},
+        {.texture = "res/sprites/mountains.png", .speed = 0.9f, .tint = WHITE, .y_offset = -40.0f},
+        {.texture = "res/sprites/mountains_close.png", .speed = 0.7f, .tint = WHITE, .y_offset = 30.0f},
     };
     parallax_init(PARALLAX_LAYER_COUNT, LAYERS, MAP_SCALE);
 }
@@ -120,15 +104,14 @@ static void create_map(void)
     MAP->tiles.sheet = LoadTexture("res/sprites/tiles.png");
 
     const int TILE_HEIGHT = MAP->tiles.sheet.height;
-    const int TILE_WIDTH = MAP->tiles.sheet.width / 6;
+    const int TILE_WIDTH = MAP->tiles.sheet.width / TILE_SECTION_COUNT;
 
     tile_init(TILE_HEIGHT, TILE_WIDTH);
     MAP->tiles.frame = (Rectangle)
     {
         .height = TILE_HEIGHT * MAP_SCALE,
         .width = TILE_WIDTH * MAP_SCALE,
-        .x = 0,
-        .y = 0
+        .x = 0, .y = 0
     };
 
     MAP->ZERO = (Vector2){
@@ -148,10 +131,23 @@ static void create_map(void)
 
 static void render_tiles(void)
 {
-    set_frame_to_zero(&MAP->tiles.frame);
-    for (int y = 0; y < MAP_MATRIX_Y; y++)
+    struct vec2uint POS_IN_GRID = map_get_tile_pos_in_map(player_get_bounds());
+
+    const int SCREEN_W_IN_TILES = ceil(SCREEN_START_WIDTH / MAP->tiles.frame.width);
+    const int SCREEN_H_IN_TILES = ceil(SCREE_START_HEIGHT / MAP->tiles.frame.height);
+
+    struct vec2uint MAP_SLICE;
+    MAP_SLICE.x = (uint16_t)Clamp(POS_IN_GRID.x - ceil(SCREEN_W_IN_TILES / 2), 0, (MAP_MATRIX_X));
+    MAP_SLICE.y = (uint16_t)Clamp(POS_IN_GRID.y - ceil(SCREEN_H_IN_TILES / 2), 0, (MAP_MATRIX_Y));
+
+    MAP->tiles.frame.x = MAP->ZERO.x + MAP_SLICE.x * MAP->tiles.frame.width;
+    MAP->tiles.frame.y = MAP->ZERO.y + MAP_SLICE.y * MAP->tiles.frame.height;
+
+    const int MAX_X = (int)clamp_max((MAP_SLICE.x + SCREEN_W_IN_TILES + RENDER_X_PADDING), (MAP_MATRIX_X));
+    const int MAX_Y = (int)clamp_max((MAP_SLICE.y + SCREEN_H_IN_TILES + RENDER_Y_PADDING), (MAP_MATRIX_Y));
+    for (int y = MAP_SLICE.y; y < MAX_Y; y++)
     {
-        for (int x = 0; x < MAP_MATRIX_X; x++)
+        for (int x = MAP_SLICE.x; x < MAX_X; x++)
         {
             if (tile_is_active(MAP->tiles.matrix[y][x]))
             {
@@ -160,25 +156,9 @@ static void render_tiles(void)
                                MAP->tiles.frame,
                                Vector2Zero(), ROTATION_ZERO, WHITE);
             }
-            move_frame_next_column(&MAP->tiles.frame);
+            MAP->tiles.frame.x += MAP->tiles.frame.width;
         }
-        move_frame_next_row(&MAP->tiles.frame);
+        MAP->tiles.frame.x = MAP->ZERO.x + MAP_SLICE.x * MAP->tiles.frame.width;
+        MAP->tiles.frame.y += MAP->tiles.frame.height;
     }
-}
-
-static inline void set_frame_to_zero(Rectangle *frame)
-{
-    frame->x = MAP->ZERO.x;
-    frame->y = MAP->ZERO.y;
-}
-
-static inline void move_frame_next_column(Rectangle *frame)
-{
-    frame->x += frame->width;
-}
-
-static inline void move_frame_next_row(Rectangle *frame)
-{
-    frame->x = MAP->ZERO.x;
-    frame->y += frame->height;
 }

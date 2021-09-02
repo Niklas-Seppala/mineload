@@ -1,6 +1,8 @@
 #include "map/tile.h"
 
-static Rectangle SECTS[16];
+#define MAX_SECTS 16
+
+static Rectangle SECTS[MAX_SECTS];
 static const uint8_t ACTIVE_MASK = 0x10;
 static const uint8_t SECT_MASK = 0xf;
 
@@ -17,19 +19,7 @@ void tile_init(int height, int width)
 
 tile_t tile_create(int sect, bool is_active)
 {
-    #ifdef DEBUG
-    if (sect > 15)
-    {
-        printf("Illegal section");
-    }
-    #endif
-
-    tile_t tile = sect;
-    if (is_active)
-    {
-        tile |= ACTIVE_MASK;
-    }
-    return tile;
+    return is_active ? (((tile_t)sect) | ACTIVE_MASK) : (tile_t)sect;
 }
 
 bool tile_is_active(tile_t tile)

@@ -3,8 +3,8 @@
 #include "game.h"
 #include "map/tile.h"
 
-#define MAP_MATRIX_X 100
-#define MAP_MATRIX_Y 200
+#define MAP_MATRIX_X 256
+#define MAP_MATRIX_Y 1052
 #define PARALLAX_LAYER_COUNT 3
 #define MAP_SCALE 3.0f
 #define TILE_SECTION_COUNT 6
