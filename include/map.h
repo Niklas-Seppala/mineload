@@ -2,8 +2,8 @@
 #define MAP_H
 #include "game.h"
 
-#define TERRAIN_MATRIX_X 60
-#define TERRAIN_MATRIX_Y 20
+#define TERRAIN_MATRIX_X 50
+#define TERRAIN_MATRIX_Y 100
 #define PARALLAX_LAYER_COUNT 3
 #define MAP_SCALE 3.0f
 #define TILE_SECTION_COUNT 6

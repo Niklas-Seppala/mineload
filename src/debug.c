@@ -7,6 +7,7 @@
 
 #define REC_QUEUE_START_SIZE 64
 #define TEXT_QUEUE_START_SIZE 64
+#define DOTS_QUEUE_START_SIZE 64
 
 struct draw_rec_args
 {
@@ -20,11 +21,19 @@ struct print_args
     Vector2 pos;
     int size;
 };
+struct draw_dot_args
+{
+    Vector2 pos;
+    float radius;
+    Color color;
+};
 
 static struct queue *DRAW_RECS;
 static struct queue *DRAW_TEXTS;
+static struct queue *DRAW_DOTS;
 
 static void add_rec_draw(const Rectangle *rec, Color color);
+static void add_dot_draw(Vector2 pos, float radius, Color color);
 static void draw_text(void *arg);
 
 void debug_init(void)
@@ -35,6 +44,9 @@ void debug_init(void)
     DRAW_TEXTS = queue_create(TEXT_QUEUE_START_SIZE,
                              sizeof(struct print_args),
                              STATIC_DATASTUCT);
+    DRAW_DOTS = queue_create(DOTS_QUEUE_START_SIZE,
+                             sizeof(struct draw_dot_args),
+                             DYNAMIC_DATASTRUCT);
 }
 
 void debug_render(void)
@@ -48,12 +60,22 @@ void debug_render(void)
         }
     }
 
+    while (queue_get_count(DRAW_DOTS) > 0)
+    {
+        struct draw_dot_args args;
+        if (queue_dequeue(DRAW_DOTS, &args))
+        {
+            debug_draw_dot(args.pos, args.radius, args.color);
+        }
+    }
+
     queue_foreach(DRAW_TEXTS, draw_text);
 }
 
 void debug_cleanup(void)
 {
     queue_free(&DRAW_RECS);
+    queue_free(&DRAW_DOTS);
     queue_free(&DRAW_TEXTS);
 }
 
@@ -82,6 +104,11 @@ void debug_draw_rec_lines_anywhere(const Rectangle *rec, Color color)
     add_rec_draw(rec, color);
 }
 
+void debug_draw_dot_anywhere(Vector2 pos, float radius, Color color)
+{
+    add_dot_draw(pos, radius, color);
+}
+
 void debug_draw_rec_lines(const Rectangle *rec, Color color)
 {
     const Vector2 TOP_LEFT = (Vector2) {
@@ -107,10 +134,25 @@ void debug_draw_rec_lines(const Rectangle *rec, Color color)
     DrawLineV(BOT_RIGHT, TOP_RIGHT, color);
 }
 
+void debug_draw_dot(Vector2 pos, float radius, Color color)
+{
+    DrawCircleV(pos, radius, color);
+}
+
 static void draw_text(void *arg)
 {
     struct print_args *args = arg;
     ui_world_print(args->pos, args->size, args->color, args->buffer);
+}
+
+static void add_dot_draw(Vector2 pos, float radius, Color color)
+{
+    struct draw_dot_args args = {
+        .color = color,
+        .pos = pos,
+        .radius = radius
+    };
+    queue_enqueue(DRAW_DOTS, &args);
 }
 
 static void add_rec_draw(const Rectangle *rec, Color color)
