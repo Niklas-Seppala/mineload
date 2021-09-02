@@ -4,8 +4,6 @@
 #include "map/colliders.h"
 
 #define TILE_SECTION_COUNT 6
-#define TERRAIN_TOP_MIDDLE 0
-#define TERRAIN_MIDDLE 1
 
 // Map object instance for the game.
 static struct map *MAP;
@@ -56,18 +54,18 @@ void map_check_collisions(struct colliders *colliders)
 
 int map_distance_x_in_grid(float a, float b)
 {
-    int result = (int)((a - b) / MAP->TERRAIN.TILEFRAME.width);
+    int result = (int)((a - b) / MAP->tiles.frame.width);
     if (result < 0) return 0;
-    const int MAX_X = TERRAIN_MATRIX_X-2;
+    const int MAX_X = MAP_MATRIX_X-2;
     if (result > MAX_X) return MAX_X;
     return result;
 }
 
 int map_distance_y_in_grid(float a, float b)
 {
-    int result = (int) ((a - b) / MAP->TERRAIN.TILEFRAME.height);
+    int result = (int) ((a - b) / MAP->tiles.frame.height);
     if (result < 0) return 0;
-    const int MAX_Y = TERRAIN_MATRIX_Y-3;
+    const int MAX_Y = MAP_MATRIX_Y-3;
     if (result > MAX_Y) return MAX_Y;
     return result;
 }
@@ -85,7 +83,7 @@ struct vec2uint map_get_tile_pos_in_map(Rectangle pos)
 //------------ MODULE INTERNALS -------------//
 //-------------------------------------------//
 #define groundzero_Y_offset(tile_h) tile_h * 2
-#define groundzero_X_offset(tile_w) -tile_w * (TERRAIN_MATRIX_X / 2)
+#define groundzero_X_offset(tile_w) -tile_w * (MAP_MATRIX_X / 2)
 
 static void create_bg(void)
 {
@@ -116,68 +114,53 @@ static void create_bg(void)
 static void create_map(void)
 {
     MAP = OOM_GUARD(calloc(1, sizeof(struct map)));
-    MAP->TERRAIN.SHEET = LoadTexture("res/sprites/tiles.png");
-    const int TILE_HEIGHT = MAP->TERRAIN.SHEET.height;
-    const int TILE_WIDTH = MAP->TERRAIN.SHEET.width / 6;
+    MAP->tiles.sheet = LoadTexture("res/sprites/tiles.png");
 
-    MAP->TERRAIN.TILEFRAME = (Rectangle)
+    const int TILE_HEIGHT = MAP->tiles.sheet.height;
+    const int TILE_WIDTH = MAP->tiles.sheet.width / 6;
+
+    tile_init(TILE_HEIGHT, TILE_WIDTH);
+    MAP->tiles.frame = (Rectangle)
     {
-        .height = TILE_WIDTH * MAP_SCALE,
+        .height = TILE_HEIGHT * MAP_SCALE,
         .width = TILE_WIDTH * MAP_SCALE,
         .x = 0,
         .y = 0
     };
 
-    MAP->TERRAIN.SECTS[TERRAIN_TOP_MIDDLE] = (Rectangle)
-    {
-        .height = TILE_HEIGHT,
-        .width = TILE_WIDTH,
-        .x = 3 * TILE_WIDTH,
-        .y = 0
-    };
-
-    MAP->TERRAIN.SECTS[TERRAIN_MIDDLE] = (Rectangle)
-    {
-        .height = TILE_HEIGHT,
-        .width = TILE_WIDTH,
-        .x = 0 * TILE_WIDTH,
-        .y = 0
-    };
-
     MAP->ZERO = (Vector2){
-        groundzero_X_offset(MAP->TERRAIN.TILEFRAME.width),
-        groundzero_Y_offset(MAP->TERRAIN.TILEFRAME.height)
+        groundzero_X_offset(MAP->tiles.frame.width),
+        groundzero_Y_offset(MAP->tiles.frame.height)
     };
 
-    for (int i = 0; i < TERRAIN_MATRIX_Y; i++)
+    for (int y = 0; y < MAP_MATRIX_Y; y++)
     {
-        for (int j = 0; j < TERRAIN_MATRIX_X; j++)
+        for (int x = 0; x < MAP_MATRIX_X; x++)
         {
-            MAP->TILE_MATRIX[i][j] = (struct tile) {
-                .active = rand() & 1,
-                .tile_type = i == 0 ? TERRAIN_TOP_MIDDLE : TERRAIN_MIDDLE
-            };
+            int section = y == 0 ? TSECT_TOP_MIDDLE : TSECT_MIDDLE;
+            MAP->tiles.matrix[y][x] = tile_create(section, true);
         }
     }
 }
 
 static void render_tiles(void)
 {
-    MAP->TERRAIN.TILEFRAME.x = MAP->ZERO.x;
-    MAP->TERRAIN.TILEFRAME.y = MAP->ZERO.y;
-    for (int y = 0; y < TERRAIN_MATRIX_Y; y++)
+    MAP->tiles.frame.x = MAP->ZERO.x;
+    MAP->tiles.frame.y = MAP->ZERO.y;
+    for (int y = 0; y < MAP_MATRIX_Y; y++)
     {
-        for (int x = 0; x < TERRAIN_MATRIX_X; x++)
+        for (int x = 0; x < MAP_MATRIX_X; x++)
         {
-            if (MAP->TILE_MATRIX[y][x].active) {
-                DrawTexturePro(MAP->TERRAIN.SHEET,
-                               MAP->TERRAIN.SECTS[MAP->TILE_MATRIX[y][x].tile_type],
-                               MAP->TERRAIN.TILEFRAME,
+            if (tile_is_active(MAP->tiles.matrix[y][x]))
+            {
+                DrawTexturePro(MAP->tiles.sheet,
+                               tile_get_texture(MAP->tiles.matrix[y][x]),
+                               MAP->tiles.frame,
                                Vector2Zero(), ROTATION_ZERO, WHITE);
             }
-            MAP->TERRAIN.TILEFRAME.x += MAP->TERRAIN.TILEFRAME.width;
+            MAP->tiles.frame.x += MAP->tiles.frame.width;
         }
-        MAP->TERRAIN.TILEFRAME.x = MAP->ZERO.x;
-        MAP->TERRAIN.TILEFRAME.y += MAP->TERRAIN.TILEFRAME.height;
+        MAP->tiles.frame.x = MAP->ZERO.x;
+        MAP->tiles.frame.y += MAP->tiles.frame.height;
     }
 }

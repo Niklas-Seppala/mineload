@@ -1,30 +1,26 @@
 #ifndef MAP_H
 #define MAP_H
 #include "game.h"
+#include "map/tile.h"
 
-#define TERRAIN_MATRIX_X 50
-#define TERRAIN_MATRIX_Y 100
+#define MAP_MATRIX_X 100
+#define MAP_MATRIX_Y 200
 #define PARALLAX_LAYER_COUNT 3
 #define MAP_SCALE 3.0f
 #define TILE_SECTION_COUNT 6
+#define MAPSECT_TOP_MIDDLE 0
+#define MAPSECT_MIDDLE 1
 
 struct tiles
 {
-    Texture2D SHEET;
-    Rectangle TILEFRAME;
-    Rectangle SECTS[TILE_SECTION_COUNT];
-};
-
-struct tile
-{
-    uint_least8_t active;
-    uint_least8_t tile_type;
+    Texture2D sheet;
+    Rectangle frame;
+    tile_t matrix[MAP_MATRIX_Y][MAP_MATRIX_X];
 };
 
 struct map {
-    struct tile TILE_MATRIX[TERRAIN_MATRIX_Y][TERRAIN_MATRIX_X];
     Vector2 ZERO;
-    struct tiles TERRAIN;
+    struct tiles tiles;
 };
 
 void map_init(void);

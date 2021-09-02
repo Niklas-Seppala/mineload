@@ -29,9 +29,9 @@ void colliders_check_collisions(struct colliders *colliders, const struct map *M
 
     // Copy readonly value to mutable rec and move it to first
     // collision checking position.
-    Rectangle mut_tile = MAP->TERRAIN.TILEFRAME;
-    mut_tile.x = MAP->ZERO.x + POS_IN_GRID.x * MAP->TERRAIN.TILEFRAME.width;
-    mut_tile.y = MAP->ZERO.y + POS_IN_GRID.y * MAP->TERRAIN.TILEFRAME.height;
+    Rectangle mut_tile = MAP->tiles.frame;
+    mut_tile.x = MAP->ZERO.x + POS_IN_GRID.x * MAP->tiles.frame.width;
+    mut_tile.y = MAP->ZERO.y + POS_IN_GRID.y * MAP->tiles.frame.height;
 
     // Checking the leftmost tiles next the player for collisions.
     const float INIT_Y = mut_tile.y;
@@ -39,7 +39,7 @@ void colliders_check_collisions(struct colliders *colliders, const struct map *M
 
     // Checking the rightmost tile next to player for collisions.
     mut_tile.y = INIT_Y;
-    mut_tile.x += MAP->TERRAIN.TILEFRAME.width;
+    mut_tile.x += MAP->tiles.frame.width;
     collision_column(MAP, POS_IN_GRID.x + 1, POS_IN_GRID.y, &mut_tile, colliders);
 }
 
@@ -87,7 +87,7 @@ static void collision_column(const struct map *MAP, int x, int y,
 {
     for (int i = 0; i < 3; i++)
     {
-        if (MAP->TILE_MATRIX[y + i][x].active)
+        if (tile_is_active(MAP->tiles.matrix[y+i][x]))
         {
             check_player_tile_collision(tile, colliders);
         }
