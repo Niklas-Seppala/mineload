@@ -52,5 +52,6 @@ struct vec2uint
     uint16_t y;
 };
 
+float lerp_ref(float a, float b, float *amount, float step);
 
 #endif // CORE_H

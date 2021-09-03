@@ -18,3 +18,10 @@ void vec2_dir_normal(const Vector2 *a, const Vector2 *b, Vector2 *out)
     out->x *= normal_magn;
     out->y *= normal_magn;
 }
+
+float lerp_ref(float a, float b, float *amount, float step)
+{
+    float res = Lerp(a, b, *amount);
+    *amount += step;
+    return res;
+}

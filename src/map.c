@@ -38,10 +38,6 @@ void map_render(void)
     render_tiles();
 }
 
-
-//-------------------------------------------//
-//----------------- GETTERS -----------------//
-//-------------------------------------------//
 void map_cleanup(void)
 {
     parallax_cleanup();
@@ -54,32 +50,106 @@ void map_check_collisions(struct colliders *colliders)
     colliders_check_collisions(colliders, MAP);
 }
 
-int map_distance_x_in_grid(float a, float b)
+void map_consume_tile(struct vec2uint tile)
 {
-    int result = (int)((a - b) / MAP->tiles.frame.width);
-    if (result < 0) return 0;
-    const int MAX_X = MAP_MATRIX_X-2;
-    if (result > MAX_X) return MAX_X;
-    return result;
+    tile_set_inactive(&MAP->tiles.matrix[tile.y][tile.x]);
 }
 
-int map_distance_y_in_grid(float a, float b)
+//-------------------------------------------//
+//----------------- GETTERS -----------------//
+//-------------------------------------------//
+
+int map_distance_y_in_grid_padding(float a, float b, int padding)
 {
     int result = (int) ((a - b) / MAP->tiles.frame.height);
-    if (result < 0) return 0;
-    const int MAX_Y = MAP_MATRIX_Y-3;
+    // Clamp result index to the top row of the map grid.
+    if (result < 0) return padding;
+    const int MAX_Y = MAP_MATRIX_Y - 1 - padding;
+    // Clamp the result to the bottom row of the map grid.
     if (result > MAX_Y) return MAX_Y;
+    // Result index is located somewhere in the middle.
     return result;
 }
 
-struct vec2uint map_get_tile_pos_in_map(Rectangle pos)
+int map_distance_x_in_grid_padding(float a, float b, int padding)
+{
+    int result = (int)((a - b) / MAP->tiles.frame.width);
+    // Clamp result index to the leftmost column of the map grid.
+    if (result < 0) return padding;
+    // Clamp the result to the rightmost column of the map grid.
+    const int MAX_X = MAP_MATRIX_X -1 - padding;
+    if (result > MAX_X) return MAX_X;
+    // Result index is located somewhere in the middle.
+    return result;
+}
+
+int map_distance_x_in_grid_padding_pro(float a, float b, int pad_left, int pad_right)
+{
+    int result = (int)((a - b) / MAP->tiles.frame.width);
+    // Clamp result index to the leftmost column of the map grid.
+    if (result < 0) return pad_left;
+    // Clamp the result to the rightmost column of the map grid.
+    const int MAX_X = MAP_MATRIX_X -1 - pad_right;
+    if (result > MAX_X) return MAX_X;
+    // Result index is located somewhere in the middle.
+    return result;
+}
+
+int map_distance_y_in_grid_padding_pro(float a, float b, int pad_top, int pad_bot)
+{
+    int result = (int) ((a - b) / MAP->tiles.frame.height);
+    // Clamp result index to the top row of the map grid.
+    if (result < 0) return pad_top;
+    const int MAX_Y = MAP_MATRIX_Y - 1 - pad_bot;
+    // Clamp the result to the bottom row of the map grid.
+    if (result > MAX_Y) return MAX_Y;
+    // Result index is located somewhere in the middle.
+    return result;
+}
+
+struct vec2uint map_get_gridpos_padding(Rectangle pos, int pad_x, int pad_y)
 {
     return (struct vec2uint) {
-        map_distance_x_in_grid(pos.x, MAP->ZERO.x),
-        map_distance_y_in_grid(pos.y, MAP->ZERO.y)
+        map_distance_x_in_grid_padding(pos.x, MAP->ZERO.x, pad_x),
+        map_distance_y_in_grid_padding(pos.y, MAP->ZERO.y, pad_y)
     };
 }
 
+struct vec2uint map_get_gridpos_padding_pro(Rectangle pos, int pad_left,
+                                         int pad_right, int pad_top, int pad_bot)
+{
+    return (struct vec2uint) {
+        map_distance_x_in_grid_padding_pro(pos.x, MAP->ZERO.x, pad_left, pad_right),
+        map_distance_y_in_grid_padding_pro(pos.y, MAP->ZERO.y, pad_top, pad_bot)
+    };
+}
+
+bool map_is_tile_active(struct vec2uint tile)
+{
+    if (tile.x >= MAP_MATRIX_X || tile.y >= MAP_MATRIX_Y)
+    {
+        return false;
+    }
+    return tile_is_active(MAP->tiles.matrix[tile.y][tile.x]);
+}
+
+Vector2 map_get_tilepos(struct vec2uint tile)
+{
+    Vector2 result = { .x = MAP->ZERO.x, .y = MAP->ZERO.y };
+    result.x += tile.x * MAP->tiles.frame.width;
+    result.y += tile.y * MAP->tiles.frame.height;
+    return result;
+}
+
+Rectangle map_get_tile_rec(void)
+{
+    return (Rectangle) {
+        .x = MAP->tiles.frame.x,
+        .y = MAP->tiles.frame.y,
+        .height = MAP->tiles.frame.height,
+        .width = MAP->tiles.frame.width,
+    };
+}
 
 //-------------------------------------------//
 //------------ MODULE INTERNALS -------------//
@@ -131,7 +201,8 @@ static void create_map(void)
 
 static void render_tiles(void)
 {
-    struct vec2uint POS_IN_GRID = map_get_tile_pos_in_map(player_get_bounds());
+    struct vec2uint POS_IN_GRID = map_get_gridpos_padding_pro(player_get_bounds(),
+                                                              0, 1, 0, 2);
 
     const int SCREEN_W_IN_TILES = ceil(SCREEN_START_WIDTH / MAP->tiles.frame.width);
     const int SCREEN_H_IN_TILES = ceil(SCREE_START_HEIGHT / MAP->tiles.frame.height);

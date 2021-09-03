@@ -32,6 +32,11 @@ Rectangle tile_get_texture(tile_t tile)
     return SECTS[tile & SECT_MASK];
 }
 
+void tile_set_inactive(tile_t *tile)
+{
+    (*tile) &= (~ACTIVE_MASK);
+}
+
 static Rectangle tile_sect(int h, int w, int MSECT)
 {
     return (Rectangle) {

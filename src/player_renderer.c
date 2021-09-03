@@ -85,8 +85,8 @@ void player_sprite_update(void)
         flip_sprite();
     }
     const Vector2 PLAYER_POS = player_get_pos();
-    SPRITE.bounds.x = PLAYER_POS.x - SPRITE.o_width * PLAYER_SCALE / 2;
-    SPRITE.bounds.y = PLAYER_POS.y - SPRITE.o_height * PLAYER_SCALE / 2;
+    SPRITE.bounds.x = PLAYER_POS.x - SPRITE.o_width * PLAYER_SCALE / 2.0f;
+    SPRITE.bounds.y = PLAYER_POS.y - SPRITE.o_height * PLAYER_SCALE / 2.0f;
 }
 
 void player_animator_update(void)

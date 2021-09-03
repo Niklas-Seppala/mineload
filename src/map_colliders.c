@@ -25,7 +25,9 @@ static void colliders_reset(struct colliders *colliders);
 void colliders_check_collisions(struct colliders *colliders, const struct map *MAP)
 {
     colliders_reset(colliders);
-    struct vec2uint POS_IN_GRID = map_get_tile_pos_in_map(player_get_bounds());
+    // struct vec2uint POS_IN_GRID = map_get_tile_pos_in_map(player_get_bounds());
+    struct vec2uint POS_IN_GRID = map_get_gridpos_padding_pro(player_get_bounds(),
+                                                               0, 1, 0, 2);
 
     // Copy readonly value to mutable rec and move it to first
     // collision checking position.
