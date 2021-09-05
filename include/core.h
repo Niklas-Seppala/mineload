@@ -46,6 +46,8 @@ void vec2_dir_normal(const Vector2 *a, const Vector2 *b, Vector2 *out);
 #define index_raw(addr, i, n_bytes) addr + n_bytes * i
 #define clamp_max(val, max) (val > max ? max : val)
 
+#define as(cast, item, field) ((cast)&item)->field
+
 struct vec2uint
 {
     uint16_t x;
@@ -53,5 +55,7 @@ struct vec2uint
 };
 
 float lerp_ref(float a, float b, float *amount, float step);
+
+Vector2 rec2vec2(Rectangle rec);
 
 #endif // CORE_H

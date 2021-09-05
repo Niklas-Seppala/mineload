@@ -193,7 +193,8 @@ static void initiate_drill(void)
     Rectangle player_bounds = player_sprite_get_bounds();
     player_bounds.y += player_bounds.height;
     player_bounds.x += player_bounds.width / 2;
-    struct vec2uint PLAYER_DRILL_TILE = map_get_gridpos_padding(player_bounds, 0, 0);
+    Vector2 player_spite_pos = { .x = player_bounds.x, .y = player_bounds.y };
+    struct vec2uint PLAYER_DRILL_TILE = map_get_gridpos_padding(player_spite_pos, 0, 0, 0, 0);
 
     if (!map_is_tile_active(PLAYER_DRILL_TILE))
     {
@@ -275,7 +276,7 @@ static void player_drill_update(float deltatime)
     }
     else
     {
-        map_consume_tile(PLAYER.move_tile);
+        map_destroy_tile(PLAYER.move_tile);
         PLAYER.state = 0 | PLAYER_STATE_ON_GROUND;
     }
 }

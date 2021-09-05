@@ -25,3 +25,12 @@ float lerp_ref(float a, float b, float *amount, float step)
     *amount += step;
     return res;
 }
+
+
+Vector2 rec2vec2(Rectangle rec)
+{
+    return (Vector2) {
+        .x = rec.x,
+        .y = rec.y
+    };
+}
