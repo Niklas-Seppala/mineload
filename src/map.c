@@ -44,7 +44,7 @@ void map_check_collisions(struct colliders *colliders)
     mapcolliders_check_collisions(colliders, MAP);
 }
 
-void map_destroy_tile(struct vec2uint tile)
+void map_destroy_tile(Vec2uint tile)
 {
     tile_set_inactive(&MAP->tiles.matrix[tile.y][tile.x]);
 }
@@ -85,16 +85,16 @@ int map_distance_y_in_grid(float a, float b, int pad_top, int pad_bot)
     return result;
 }
 
-struct vec2uint map_get_gridpos_padding(Vector2 pos, int pad_left, int pad_right,
+Vec2uint map_get_gridpos_padding(Vector2 pos, int pad_left, int pad_right,
                                         int pad_top, int pad_bot)
 {
-    return (struct vec2uint) {
+    return (Vec2uint) {
         map_distance_x_in_grid(pos.x, MAP->ZERO.x, pad_left, pad_right),
         map_distance_y_in_grid(pos.y, MAP->ZERO.y, pad_top, pad_bot)
     };
 }
 
-bool map_is_tile_active(struct vec2uint tile)
+bool map_is_tile_active(Vec2uint tile)
 {
     if (tile.x >= MAP_MATRIX_X || tile.y >= MAP_MATRIX_Y)
     {
@@ -103,7 +103,13 @@ bool map_is_tile_active(struct vec2uint tile)
     return tile_is_active(MAP->tiles.matrix[tile.y][tile.x]);
 }
 
-Vector2 map_get_tilepos(struct vec2uint tile)
+
+tile_t map_get_tile(Vec2uint tile)
+{
+    return MAP->tiles.matrix[tile.y][tile.x];
+}
+
+Vector2 map_get_tilepos(Vec2uint tile)
 {
     Vector2 result = { .x = MAP->ZERO.x, .y = MAP->ZERO.y };
     result.x += tile.x * MAP->tiles.frame.width;
@@ -119,6 +125,18 @@ Rectangle map_get_tile_rec(void)
         .height = MAP->tiles.frame.height,
         .width = MAP->tiles.frame.width,
     };
+}
+
+struct tile_expanded map_get_tile_expanded(Vec2uint tile)
+{
+    tile_t tile_packed = map_get_tile(tile);
+
+    struct tile_expanded result;
+    result.is_active = tile_is_active(tile_packed);
+    result.medium = tile_get_medium(tile_packed);
+    result.world_pos = map_get_tilepos(tile);
+    result.coords = tile;
+    return result;
 }
 
 
@@ -165,7 +183,7 @@ static void create_map(void)
         for (int x = 0; x < MAP_MATRIX_X; x++)
         {
             int section = y == 0 ? TSECT_TOP_MIDDLE : TSECT_MIDDLE;
-            MAP->tiles.matrix[y][x] = tile_create(section, true);
+            MAP->tiles.matrix[y][x] = tile_create(section, true, TMEDIUM_SAND);
         }
     }
 }
@@ -173,12 +191,12 @@ static void create_map(void)
 static void render_tiles(void)
 {
     Rectangle bounds = player_get_bounds();
-    struct vec2uint POS_IN_GRID = map_get_gridpos_padding(rec2vec2(bounds),0, 1, 0, 2);
+    Vec2uint POS_IN_GRID = map_get_gridpos_padding(rec2vec2(bounds), 0, 1, 0, 2);
 
     const int SCREEN_W_IN_TILES = ceil(SCREEN_START_WIDTH / MAP->tiles.frame.width);
     const int SCREEN_H_IN_TILES = ceil(SCREE_START_HEIGHT / MAP->tiles.frame.height);
 
-    struct vec2uint MAP_SLICE;
+    Vec2uint MAP_SLICE;
     MAP_SLICE.x = (uint16_t)Clamp(POS_IN_GRID.x - ceil(SCREEN_W_IN_TILES / 2), 0, (MAP_MATRIX_X));
     MAP_SLICE.y = (uint16_t)Clamp(POS_IN_GRID.y - ceil(SCREEN_H_IN_TILES / 2), 0, (MAP_MATRIX_Y));
 

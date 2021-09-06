@@ -31,11 +31,11 @@ void vec2_dir_normal(const Vector2 *a, const Vector2 *b, Vector2 *out);
 #define dec_wrap(index, max) (index - 1) < 0 ? max-1 : index - 1
 #define clamp_max(val, max) (val > max ? max : val)
 
-struct vec2uint
+typedef struct vec2uint
 {
     uint16_t x;
     uint16_t y;
-};
+} Vec2uint;
 
 float lerp_ref(float a, float b, float *amount, float step);
 

@@ -63,7 +63,7 @@ Rectangle map_get_tile_rec(void);
  * @param tile Tile X-Y coordites
  * @return Vector2 world position of the tile. (top-left)
  */
-Vector2 map_get_tilepos(struct vec2uint tile);
+Vector2 map_get_tilepos(Vec2uint tile);
 
 /**
  * @brief Sets the tile in the specified (tile grid) x-y index
@@ -71,7 +71,7 @@ Vector2 map_get_tilepos(struct vec2uint tile);
  * 
  * @param tile Target tile x-y coordinates in the tile grid.
  */
-void map_destroy_tile(struct vec2uint tile);
+void map_destroy_tile(Vec2uint tile);
 
 /**
  * @brief Calculates distance from a to b in tiles.
@@ -104,10 +104,10 @@ int map_distance_x_in_grid(float a, float b, int pad_left, int pad_right);
  * @param pad_right Map grid right padding.
  * @param pad_top Map grid top padding.
  * @param pad_bot Map grid bottom padding.
- * @return struct vec2uint Tile coordinates under the specified position.
+ * @return Vec2uint Tile coordinates under the specified position.
  */
-struct vec2uint map_get_gridpos_padding(Vector2 pos, int pad_left, int pad_right,
-                                            int pad_top, int pad_bot);
+Vec2uint map_get_gridpos_padding(Vector2 pos, int pad_left, int pad_right,
+                                 int pad_top, int pad_bot);
 
 /**
  * @brief Is the specified tile in the grid active
@@ -116,6 +116,22 @@ struct vec2uint map_get_gridpos_padding(Vector2 pos, int pad_left, int pad_right
  * @return true if is active
  * @return false if not
  */
-bool map_is_tile_active(struct vec2uint tile);
+bool map_is_tile_active(Vec2uint tile);
+
+/**
+ * @brief Get the specified tile "object".
+ * 
+ * @param tile Specified tile coordinates in the map grid.
+ * @return tile_t Requested tile.
+ */
+tile_t map_get_tile(Vec2uint tile);
+
+/**
+ * @brief Get the expanded object of the specified tile.
+ * 
+ * @param tile Tile xy-coordinates in the map grid.
+ * @return struct tile_expanded result object.
+ */
+struct tile_expanded map_get_tile_expanded(Vec2uint tile);
 
 #endif // MAP_H

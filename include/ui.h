@@ -1,6 +1,7 @@
 #ifndef UI_H
 #define UI_H
 #include "core.h"
+
 #define MAX_UI_TEX 256
 #define FONT_S 18
 #define FONT_M 20

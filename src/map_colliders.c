@@ -21,7 +21,7 @@ void mapcolliders_check_collisions(struct colliders *colliders, const struct map
     colliders_reset(colliders);
 
     Rectangle bounds = player_get_bounds();
-    struct vec2uint POS_IN_GRID = map_get_gridpos_padding(rec2vec2(bounds), 0, 1, 0, 2);
+    Vec2uint POS_IN_GRID = map_get_gridpos_padding(rec2vec2(bounds), 0, 1, 0, 2);
 
     // Copy readonly value to mutable rec and move it to first
     // collision checking position.
@@ -38,11 +38,6 @@ void mapcolliders_check_collisions(struct colliders *colliders, const struct map
     mut_tile.x += MAP->tiles.frame.width;
     collision_column(MAP, POS_IN_GRID.x + 1, POS_IN_GRID.y, &mut_tile, colliders);
 }
-
-
-//-------------------------------------------//
-//------------ MODULE INTERNALS -------------//
-//-------------------------------------------//
 
 static void colliders_reset(struct colliders *colliders)
 {

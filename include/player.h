@@ -27,7 +27,6 @@ void player_cleanup(void);
 void player_init(void);
 void render_player(void);
 Vector2 player_get_pos(void);
-bool player_get_can_jump(void);
 bool player_moving_right(void);
 bool player_moving_left(void);
 void player_update(float delta_time);

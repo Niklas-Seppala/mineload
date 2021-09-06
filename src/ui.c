@@ -64,34 +64,31 @@ static void debug_player_stats(void)
     const Vector2 PLAYER_SPEED = player_get_speed();
     const uint8_t STATE = player_get_state();
 
-    ui_screen_printf((Vector2) {10, 20},  FONT_S, GREEN,
+    ui_screen_printf((Vector2) {10, 20}, FONT_S, GREEN,
         "POS          X %.2f Y %.2f", PLAYER_POS.x, PLAYER_POS.y);
 
-    ui_screen_printf((Vector2) {10, 40},  FONT_S, GREEN,
-        "CAN JUMP   %s", player_get_can_jump() ? "TRUE" : "FALSE");
-
-    ui_screen_printf((Vector2) {10, 60},  FONT_S, GREEN,
+    ui_screen_printf((Vector2) {10, 40}, FONT_S, GREEN,
         "STATE       0x%02x", STATE);
 
-    ui_screen_printf((Vector2) {10, 80},  FONT_S, GREEN,
+    ui_screen_printf((Vector2) {10, 60}, FONT_S, GREEN,
         "   GROUND   %d", STATE & PLAYER_STATE_ON_GROUND ? 1 : 0);
 
-    ui_screen_printf((Vector2) {10, 100}, FONT_S, GREEN,
+    ui_screen_printf((Vector2) {10, 80}, FONT_S, GREEN,
         "   AIR       %d", STATE & PLAYER_STATE_ON_AIR ? 1 : 0);
 
-    ui_screen_printf((Vector2) {10, 120}, FONT_S, GREEN,
+    ui_screen_printf((Vector2) {10, 100}, FONT_S, GREEN,
         "   JETPACK  %d", STATE & PLAYER_STATE_JETPACK ? 1 : 0);
 
-    ui_screen_printf((Vector2) {10, 140}, FONT_S, GREEN,
+    ui_screen_printf((Vector2) {10, 120}, FONT_S, GREEN,
         "   RUNNING  %d", STATE & PLAYER_STATE_RUNNING ? 1 : 0);
 
-    ui_screen_printf((Vector2) {10, 160}, FONT_S, GREEN,
+    ui_screen_printf((Vector2) {10, 140}, FONT_S, GREEN,
         "   FALLING  %d", STATE & PLAYER_STATE_FALLING ? 1 : 0);
 
-    ui_screen_printf((Vector2) {10, 180}, FONT_S, GREEN,
+    ui_screen_printf((Vector2) {10, 160}, FONT_S, GREEN,
         "   DRILL     %d", STATE & PLAYER_STATE_DRILL ? 1 : 0);
 
-    ui_screen_printf((Vector2) {10, 200}, FONT_S, GREEN,
+    ui_screen_printf((Vector2) {10, 180}, FONT_S, GREEN,
         "SPEED       X %.2f Y %.2f", PLAYER_SPEED.x, PLAYER_SPEED.y);
 }
 #endif
