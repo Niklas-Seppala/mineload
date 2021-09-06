@@ -3,9 +3,9 @@
 #include "core.h"
 
 #define MAX_UI_TEX 256
-#define FONT_S 18
-#define FONT_M 20
-#define FONT_L 24
+#define FONT_S 16
+#define FONT_M 32
+#define FONT_L 64
 
 void ui_init(void);
 void ui_update(void);

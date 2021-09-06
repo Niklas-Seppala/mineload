@@ -3,6 +3,7 @@
 #include "camera.h"
 #include "debug.h"
 #include "ui.h"
+#include "game.h"
 
 #define REC_QUEUE_START_SIZE 64
 #define TEXT_QUEUE_START_SIZE 64
@@ -48,6 +49,8 @@ void debug_init(void)
                              DYNAMIC_DATASTRUCT);
 }
 
+void debug_update(void) {}
+
 void debug_render(void)
 {
     while (queue_get_count(DRAW_RECS) > 0)
@@ -69,6 +72,53 @@ void debug_render(void)
     }
 
     queue_foreach(DRAW_TEXTS, draw_text);
+}
+
+
+static int strsplit(const char *str, char delim, char **out, size_t n, size_t str_n)
+{
+    char c;
+    for (int str_i = 0, read_c = 0; str_i < n; str_i++)
+    {
+        for (int str_out_i = 0; str_out_i < str_n; str_out_i++)
+        {
+            c = str[read_c++];
+            if (c == '\0' || c == delim)
+            {
+                out[str_i][str_out_i] = '\0';
+                break;
+            }
+            else
+            {
+                out[str_i][str_out_i] = c;
+            }
+        }
+    }
+    return 0;
+}
+
+#define SPLIT_COUNT 7
+#define STR_SIZE 64
+size_t debug_get_procmem(void)
+{
+    size_t mem;
+    char buffer[64];
+    FILE* status = fopen( "/proc/self/statm", "r" );
+    if (fgets(buffer, 64, status) == NULL)
+    {
+        return 0;
+    }
+
+    char* items[SPLIT_COUNT] = { 0 };
+    for (int i = 0; i < SPLIT_COUNT; i++)
+        items[i] = calloc(STR_SIZE, sizeof(char));
+
+    strsplit(buffer, ' ', items, SPLIT_COUNT, STR_SIZE);
+    mem = atol(items[0]);
+
+    for (int i = 0; i < SPLIT_COUNT; i++) 
+        free(items[i]);
+    return mem;
 }
 
 void debug_cleanup(void)

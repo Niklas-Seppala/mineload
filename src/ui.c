@@ -12,7 +12,7 @@ static void debug_player_stats(void);
 
 void ui_init(void)
 {
-    MAIN_FONT = LoadFont("res/fonts/alpha_beta.png");
+    MAIN_FONT = LoadFont("res/fonts/mecha.png");
 }
 
 #define MAX_UI_TEX 256
@@ -49,6 +49,8 @@ void ui_render(void)
     #ifdef DEBUG
     debug_player_stats();
     DrawFPS(SCREEN_START_WIDTH - 100, 10);
+    const Vector2 pos = { SCREEN_START_WIDTH - 180, 40 };
+    ui_screen_printf(pos, 16, GREEN, "VIRTUAL MEM %ld MB", debug_get_procmem());
     #endif
 }
 
@@ -65,7 +67,7 @@ static void debug_player_stats(void)
     const uint8_t STATE = player_get_state();
 
     ui_screen_printf((Vector2) {10, 20}, FONT_S, GREEN,
-        "POS          X %.2f Y %.2f", PLAYER_POS.x, PLAYER_POS.y);
+        "POS         X %.2f Y %.2f", PLAYER_POS.x, PLAYER_POS.y);
 
     ui_screen_printf((Vector2) {10, 40}, FONT_S, GREEN,
         "STATE       0x%02x", STATE);
@@ -74,7 +76,7 @@ static void debug_player_stats(void)
         "   GROUND   %d", STATE & PLAYER_STATE_ON_GROUND ? 1 : 0);
 
     ui_screen_printf((Vector2) {10, 80}, FONT_S, GREEN,
-        "   AIR       %d", STATE & PLAYER_STATE_ON_AIR ? 1 : 0);
+        "   AIR      %d", STATE & PLAYER_STATE_ON_AIR ? 1 : 0);
 
     ui_screen_printf((Vector2) {10, 100}, FONT_S, GREEN,
         "   JETPACK  %d", STATE & PLAYER_STATE_JETPACK ? 1 : 0);
@@ -86,7 +88,7 @@ static void debug_player_stats(void)
         "   FALLING  %d", STATE & PLAYER_STATE_FALLING ? 1 : 0);
 
     ui_screen_printf((Vector2) {10, 160}, FONT_S, GREEN,
-        "   DRILL     %d", STATE & PLAYER_STATE_DRILL ? 1 : 0);
+        "   DRILL    %d", STATE & PLAYER_STATE_DRILL ? 1 : 0);
 
     ui_screen_printf((Vector2) {10, 180}, FONT_S, GREEN,
         "SPEED       X %.2f Y %.2f", PLAYER_SPEED.x, PLAYER_SPEED.y);

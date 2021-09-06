@@ -24,6 +24,10 @@ void update(void)
     map_update();
     player_update(deltatime);
     camera_update(player_get_pos());
+
+    #ifdef DEBUG
+    debug_update();
+    #endif
 }
 
 void render(void)
