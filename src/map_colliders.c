@@ -4,9 +4,6 @@
 // #define DEBUG_COLLIDERS
 #endif
 
-//-------------------------------------------//
-//--------------- PROTOTYPES ----------------//
-//-------------------------------------------//
 static void check_collider_tile(const Rectangle *tile,
                                 const Rectangle *collider, bool *result);
 
@@ -19,10 +16,7 @@ static void collision_column(const struct map *MAP, int x, int y,
 static void colliders_reset(struct colliders *colliders);
 
 
-//-------------------------------------------//
-//-------- PUBLIC API IMPLEMENTATION --------//
-//-------------------------------------------//
-void colliders_check_collisions(struct colliders *colliders, const struct map *MAP)
+void mapcolliders_check_collisions(struct colliders *colliders, const struct map *MAP)
 {
     colliders_reset(colliders);
 
@@ -49,6 +43,7 @@ void colliders_check_collisions(struct colliders *colliders, const struct map *M
 //-------------------------------------------//
 //------------ MODULE INTERNALS -------------//
 //-------------------------------------------//
+
 static void colliders_reset(struct colliders *colliders)
 {
     colliders->collision.bottom = false;

@@ -1,7 +1,8 @@
 #include "map.h"
+#include "map/colliders.h"
+#include "map/tile.h"
 #include "camera.h"
 #include "parallax.h"
-#include "map/colliders.h"
 
 #define TILE_SECTION_COUNT 6
 #define RENDER_X_PADDING 2
@@ -10,16 +11,10 @@
 // Map object instance for the game.
 static struct map *MAP;
 
-//-------------------------------------------//
-//--------------- PROTOTYPES ----------------//
-//-------------------------------------------//
 static void render_tiles(void);
 static void create_bg(void);
 static void create_map(void);
 
-//-------------------------------------------//
-//-------- PUBLIC API IMPLEMENTATION --------//
-//-------------------------------------------//
 void map_init(void)
 {
     create_bg();
@@ -46,17 +41,13 @@ void map_cleanup(void)
 
 void map_check_collisions(struct colliders *colliders)
 {
-    colliders_check_collisions(colliders, MAP);
+    mapcolliders_check_collisions(colliders, MAP);
 }
 
 void map_destroy_tile(struct vec2uint tile)
 {
     tile_set_inactive(&MAP->tiles.matrix[tile.y][tile.x]);
 }
-
-//-------------------------------------------//
-//----------------- GETTERS -----------------//
-//-------------------------------------------//
 
 int map_distance_x_in_grid(float a, float b, int pad_left, int pad_right)
 {
@@ -94,8 +85,8 @@ int map_distance_y_in_grid(float a, float b, int pad_top, int pad_bot)
     return result;
 }
 
-struct vec2uint map_get_gridpos_padding(Vector2 pos, int pad_left,
-                                         int pad_right, int pad_top, int pad_bot)
+struct vec2uint map_get_gridpos_padding(Vector2 pos, int pad_left, int pad_right,
+                                        int pad_top, int pad_bot)
 {
     return (struct vec2uint) {
         map_distance_x_in_grid(pos.x, MAP->ZERO.x, pad_left, pad_right),
@@ -129,6 +120,7 @@ Rectangle map_get_tile_rec(void)
         .width = MAP->tiles.frame.width,
     };
 }
+
 
 //-------------------------------------------//
 //------------ MODULE INTERNALS -------------//
