@@ -1,6 +1,5 @@
 #include <string.h>
 #include "data/queue.h"
-#include "core.h"
 
 struct queue
 {

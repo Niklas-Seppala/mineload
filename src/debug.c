@@ -1,5 +1,4 @@
 #ifdef DEBUG
-#include <stdarg.h>
 #include "data/queue.h"
 #include "camera.h"
 #include "debug.h"

@@ -4,12 +4,12 @@ void init(void)
 {
     InitWindow(SCREEN_START_WIDTH, SCREE_START_HEIGHT, "Mineload");
     SetTargetFPS(60);
+    SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
+
     ui_init();
     map_init();
     player_init();
     camera_init(player_get_pos(), SCREEN_START_WIDTH, SCREE_START_HEIGHT);
-    projectiles_init();
-    SetMouseCursor(MOUSE_CURSOR_CROSSHAIR);
 
     #ifdef DEBUG
     debug_init();
@@ -18,13 +18,12 @@ void init(void)
 
 void update(void)
 {
-    float delta_time = GetFrameTime();
+    float deltatime = GetFrameTime();
     input();
     ui_update();
     map_update();
-    player_update(delta_time);
+    player_update(deltatime);
     camera_update(player_get_pos());
-    projectiles_update();
 }
 
 void render(void)
@@ -34,8 +33,6 @@ void render(void)
         BeginMode2D(camera_get_camera());
             map_render();
             render_player();
-            projectiles_render();
-
             #ifdef DEBUG
             debug_render();
             #endif
@@ -47,7 +44,6 @@ void render(void)
 void clean(void)
 {
     map_cleanup();
-    projectiles_cleanup();
     #ifdef DEBUG
     debug_cleanup();
     #endif

@@ -2,7 +2,6 @@
 #define GAME_H
 #include "core.h"
 #include "input.h"
-#include "projectiles.h"
 #include "player.h"
 #include "camera.h"
 #include "ui.h"
