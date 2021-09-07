@@ -9,6 +9,9 @@
 #define TEXT_QUEUE_START_SIZE 64
 #define DOTS_QUEUE_START_SIZE 64
 
+#define PROCSTAT_ITEM_C 7
+#define PROCSTAT_STR_SIZE 64
+
 struct draw_rec_args
 {
     const Rectangle rec;
@@ -31,10 +34,12 @@ struct draw_dot_args
 static struct queue *DRAW_RECS;
 static struct queue *DRAW_TEXTS;
 static struct queue *DRAW_DOTS;
+static FILE *PROC_STATS_F = NULL;
 
 static void add_rec_draw(const Rectangle *rec, Color color);
 static void add_dot_draw(Vector2 pos, float radius, Color color);
 static void draw_text(void *arg);
+static int strsplit(const char *str, char delim, char **out, size_t n, size_t str_n);
 
 void debug_init(void)
 {
@@ -75,50 +80,38 @@ void debug_render(void)
 }
 
 
-static int strsplit(const char *str, char delim, char **out, size_t n, size_t str_n)
+#include <unistd.h>
+struct proc_stats debug_get_procstats(void)
 {
-    char c;
-    for (int str_i = 0, read_c = 0; str_i < n; str_i++)
-    {
-        for (int str_out_i = 0; str_out_i < str_n; str_out_i++)
-        {
-            c = str[read_c++];
-            if (c == '\0' || c == delim)
-            {
-                out[str_i][str_out_i] = '\0';
-                break;
-            }
-            else
-            {
-                out[str_i][str_out_i] = c;
-            }
-        }
-    }
-    return 0;
-}
+    struct proc_stats stats = {0};
+    static char buffer[PROCSTAT_STR_SIZE];
 
-#define SPLIT_COUNT 7
-#define STR_SIZE 64
-size_t debug_get_procmem(void)
-{
-    size_t mem;
-    char buffer[64];
-    FILE* status = fopen( "/proc/self/statm", "r" );
-    if (fgets(buffer, 64, status) == NULL)
+    if (PROC_STATS_F == NULL)
     {
-        return 0;
+        // Open process statm
+        PROC_STATS_F = fopen( "/proc/self/statm", "r" );
     }
 
-    char* items[SPLIT_COUNT] = { 0 };
-    for (int i = 0; i < SPLIT_COUNT; i++)
-        items[i] = calloc(STR_SIZE, sizeof(char));
+    lseek(fileno(PROC_STATS_F), 0, SEEK_SET);
+    if (fgets(buffer, PROCSTAT_STR_SIZE, PROC_STATS_F) == NULL)
+    {
+        // Nothing to read
+        return stats;
+    }
 
-    strsplit(buffer, ' ', items, SPLIT_COUNT, STR_SIZE);
-    mem = atol(items[0]);
+    char* items[PROCSTAT_ITEM_C] = { 0 };
+    for (int i = 0; i < PROCSTAT_ITEM_C; i++) 
+        items[i] = OOM_GUARD(calloc(PROCSTAT_STR_SIZE, sizeof(char)));
 
-    for (int i = 0; i < SPLIT_COUNT; i++) 
-        free(items[i]);
-    return mem;
+    strsplit(buffer, ' ', items, PROCSTAT_ITEM_C, PROCSTAT_STR_SIZE);
+    stats.memory = atol(items[0]);
+    stats.resident = atol(items[1]);
+    stats.shared = atol(items[2]);
+    stats.text = atol(items[3]);
+    stats.data = atol(items[5]);
+
+    for (int i = 0; i < PROCSTAT_ITEM_C; i++) free(items[i]);
+    return stats;
 }
 
 void debug_cleanup(void)
@@ -126,6 +119,8 @@ void debug_cleanup(void)
     queue_free(&DRAW_RECS);
     queue_free(&DRAW_DOTS);
     queue_free(&DRAW_TEXTS);
+    fclose(PROC_STATS_F);
+    PROC_STATS_F = NULL;
 }
 
 void debug_printf_world_anywhere(Vector2 pos, int size, Color color,
@@ -211,6 +206,28 @@ static void add_rec_draw(const Rectangle *rec, Color color)
         .rec = *rec
     };
     queue_enqueue(DRAW_RECS, &args);
+}
+
+static int strsplit(const char *str, char delim, char **out, size_t n, size_t str_n)
+{
+    char c;
+    for (int str_i = 0, read_c = 0; str_i < n; str_i++)
+    {
+        for (int str_out_i = 0; str_out_i < str_n; str_out_i++)
+        {
+            c = str[read_c++];
+            if (c == '\0' || c == delim)
+            {
+                out[str_i][str_out_i] = '\0';
+                break;
+            }
+            else
+            {
+                out[str_i][str_out_i] = c;
+            }
+        }
+    }
+    return 0;
 }
 
 #endif

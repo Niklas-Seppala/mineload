@@ -8,6 +8,8 @@ static Font MAIN_FONT;
 
 #ifdef DEBUG
 static void debug_player_stats(void);
+static void print_procmem(void);
+static struct proc_stats stats = {0};
 #endif
 
 void ui_init(void)
@@ -48,11 +50,13 @@ void ui_render(void)
 {
     #ifdef DEBUG
     debug_player_stats();
-    DrawFPS(SCREEN_START_WIDTH - 100, 10);
-    const Vector2 pos = { SCREEN_START_WIDTH - 180, 40 };
-    ui_screen_printf(pos, 16, GREEN, "VIRTUAL MEM %ld MB", debug_get_procmem());
+    int fps = GetFPS();
+    ui_screen_printf((Vector2){ SCREEN_START_WIDTH - 100, 10 },
+                      FONT_M, GREEN, "%d FPS", fps);
+    print_procmem();
     #endif
 }
+
 
 Font ui_get_font(void)
 {
@@ -93,4 +97,14 @@ static void debug_player_stats(void)
     ui_screen_printf((Vector2) {10, 180}, FONT_S, GREEN,
         "SPEED       X %.2f Y %.2f", PLAYER_SPEED.x, PLAYER_SPEED.y);
 }
+
+static void print_procmem(void)
+{
+    stats = debug_get_procstats();
+    ui_screen_printf((Vector2){ SCREEN_START_WIDTH - 150, 50 }, 16, GREEN,
+                     "VIRTUAL  %ld kB", (stats.memory * 4096) / 1000);
+    ui_screen_printf((Vector2){ SCREEN_START_WIDTH - 150, 70 }, 16, GREEN,
+                     "RAM      %ld kB", (stats.resident * 4096) / 1000);
+}
+
 #endif
