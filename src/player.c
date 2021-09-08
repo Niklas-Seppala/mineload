@@ -217,6 +217,11 @@ static void update_speed_collisions(void)
     }
 }
 
+void player_set_state(uint8_t flag)
+{
+    PLAYER.state |= flag;
+}
+
 void player_clear_state(uint8_t flag)
 {
     PLAYER.state &= (~flag);

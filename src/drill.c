@@ -28,6 +28,7 @@ void player_drill_update(float deltatime, Vector2 *player_pos)
     {
         map_destroy_tile(TARGET.coords);
         player_clear_state(PLAYER_STATE_DRILL);
+        player_set_state(PLAYER_STATE_ON_GROUND);
     }
 }
 

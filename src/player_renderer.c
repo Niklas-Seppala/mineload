@@ -1,10 +1,6 @@
 #include "player/renderer.h"
 #include "player.h"
 
-#ifdef DEBUG
-// #define DEBUG_PLAYER_SPRITE
-#endif
-
 #define SPRITESHEET_SRC "res/sprites/player.png"
 #define SPRITE_COUNT        10
 #define ANIM_UNDEFIND       -1
@@ -106,7 +102,7 @@ void player_sprite_render(void)
         Vector2Zero(), ROTATION_ZERO, WHITE
     );
     #ifdef DEBUG_PLAYER_SPRITE
-    debug_draw_rec_lines(&SPRITE.bounds, COLOR_GREEN);
+    debug_rec_outlines(&SPRITE.bounds, COLOR_GREEN);
     DrawCircleV(player_get_pos(), 1, COLOR_GREEN);
     #endif
 }
@@ -144,6 +140,7 @@ static int map_state_to_frame(const uint8_t STATE)
     LATEST_ANIM = ANIM_UNDEFIND;
     #ifdef DEBUG
     printf("NO MATCHING PLAYER STATE MAPPED TO ANIMATION\n");
+    printf("0x%x\n", STATE);
     #endif
     return -1;
 }

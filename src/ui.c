@@ -6,10 +6,12 @@
 
 static Font MAIN_FONT;
 
+#define MAX_UI_TEX 256
+static char UI_TEXT_BUFFER[MAX_UI_TEX];
+
 #ifdef DEBUG
-static void debug_player_stats(void);
+static void print_player_stats(void);
 static void print_procmem(void);
-static struct proc_stats stats = {0};
 #endif
 
 void ui_init(void)
@@ -17,9 +19,23 @@ void ui_init(void)
     MAIN_FONT = LoadFont("res/fonts/mecha.png");
 }
 
-#define MAX_UI_TEX 256
+void ui_update(void)
+{
+}
 
-static char UI_TEXT_BUFFER[MAX_UI_TEX];
+void ui_render(void)
+{
+    #ifdef DEBUG_PLAYER_STATUS
+    print_player_stats();
+    int fps = GetFPS();
+    ui_screen_printf((Vector2){ SCREEN_START_WIDTH - 100, 10 }, FONT_M, GREEN,
+                     "%d FPS", fps);
+    #endif
+
+    #ifdef DEBUG_PROCM
+    print_procmem();
+    #endif
+}
 
 void ui_screen_printf(const Vector2 position, int font_size, const Color color, const char *format, ...)
 {
@@ -44,27 +60,8 @@ void ui_world_print(const Vector2 pos, int size, Color color, const char *text)
     DrawTextEx(MAIN_FONT, text, pos, size, 3, color);
 }
 
-void ui_update(void) {}
-
-void ui_render(void)
-{
-    #ifdef DEBUG
-    debug_player_stats();
-    int fps = GetFPS();
-    ui_screen_printf((Vector2){ SCREEN_START_WIDTH - 100, 10 },
-                      FONT_M, GREEN, "%d FPS", fps);
-    print_procmem();
-    #endif
-}
-
-
-Font ui_get_font(void)
-{
-    return MAIN_FONT;
-}
-
 #ifdef DEBUG
-static void debug_player_stats(void)
+static void print_player_stats(void)
 {
     const Vector2 PLAYER_POS = player_get_pos();
     const Vector2 PLAYER_SPEED = player_get_speed();
@@ -100,7 +97,7 @@ static void debug_player_stats(void)
 
 static void print_procmem(void)
 {
-    stats = debug_get_procstats();
+    struct proc_stats stats = debug_procstatm();
     ui_screen_printf((Vector2){ SCREEN_START_WIDTH - 150, 50 }, 16, GREEN,
                      "VIRTUAL  %ld kB", (stats.memory * 4096) / 1000);
     ui_screen_printf((Vector2){ SCREEN_START_WIDTH - 150, 70 }, 16, GREEN,

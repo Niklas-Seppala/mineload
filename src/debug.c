@@ -1,4 +1,6 @@
 #ifdef DEBUG
+
+#include <unistd.h>
 #include "data/queue.h"
 #include "camera.h"
 #include "debug.h"
@@ -63,7 +65,7 @@ void debug_render(void)
         struct draw_rec_args args;
         if (queue_dequeue(DRAW_RECS, &args))
         {
-            debug_draw_rec_lines(&args.rec, args.color);
+            debug_rec_outlines(&args.rec, args.color);
         }
     }
 
@@ -72,7 +74,7 @@ void debug_render(void)
         struct draw_dot_args args;
         if (queue_dequeue(DRAW_DOTS, &args))
         {
-            debug_draw_dot(args.pos, args.radius, args.color);
+            debug_dot(args.pos, args.radius, args.color);
         }
     }
 
@@ -80,22 +82,19 @@ void debug_render(void)
 }
 
 
-#include <unistd.h>
-struct proc_stats debug_get_procstats(void)
+struct proc_stats debug_procstatm(void)
 {
     struct proc_stats stats = {0};
     static char buffer[PROCSTAT_STR_SIZE];
 
     if (PROC_STATS_F == NULL)
     {
-        // Open process statm
         PROC_STATS_F = fopen( "/proc/self/statm", "r" );
     }
 
     lseek(fileno(PROC_STATS_F), 0, SEEK_SET);
     if (fgets(buffer, PROCSTAT_STR_SIZE, PROC_STATS_F) == NULL)
     {
-        // Nothing to read
         return stats;
     }
 
@@ -143,17 +142,17 @@ void debug_printf_world_anywhere(Vector2 pos, int size, Color color,
     }
 }
 
-void debug_draw_rec_lines_anywhere(const Rectangle *rec, Color color)
+void debug_rec_outlines_all(const Rectangle *rec, Color color)
 {
     add_rec_draw(rec, color);
 }
 
-void debug_draw_dot_anywhere(Vector2 pos, float radius, Color color)
+void debug_dot_all(Vector2 pos, float radius, Color color)
 {
     add_dot_draw(pos, radius, color);
 }
 
-void debug_draw_rec_lines(const Rectangle *rec, Color color)
+void debug_rec_outlines(const Rectangle *rec, Color color)
 {
     const Vector2 TOP_LEFT = (Vector2) {
         .x = rec->x,
@@ -178,7 +177,7 @@ void debug_draw_rec_lines(const Rectangle *rec, Color color)
     DrawLineV(BOT_RIGHT, TOP_RIGHT, color);
 }
 
-void debug_draw_dot(Vector2 pos, float radius, Color color)
+void debug_dot(Vector2 pos, float radius, Color color)
 {
     DrawCircleV(pos, radius, color);
 }

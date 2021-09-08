@@ -10,7 +10,6 @@
 void ui_init(void);
 void ui_update(void);
 void ui_render(void);
-Font ui_get_font(void);
 void ui_screen_printf(const Vector2 position, int font_size, const Color color, const char *format, ...);
 void ui_world_printf(const Vector2 position, int font_size, const Color color, const char *format, ...);
 void ui_world_print(const Vector2 pos, int size, Color color, const char *text);
