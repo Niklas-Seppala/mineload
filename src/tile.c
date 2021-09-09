@@ -3,8 +3,9 @@
 #define MAX_SECTS 16
 #define MAX_MEDIUMS 8
 #define MEDIUM_BIT_PAD 5
-#define TSECT_TOP_MIDDLE_IN_SHEET 3
-#define TSECT_MIDDLE_IN_SHEET 0
+#define TSECT_GRAVEL_TOP_IN_SHEET 0
+#define TSECT_GRAVEL_IN_SHEET     1
+#define TSECT_GRAVEL_BG_IN_SHEET  2
 
 static float MEDIUMS[MAX_MEDIUMS];
 static Rectangle SECTS[MAX_SECTS];
@@ -16,8 +17,9 @@ static Rectangle tile_sect(int h, int w, int MSECT);
 
 void tile_init(int tile_height, int tile_width)
 {
-    SECTS[TSECT_TOP_MIDDLE] = tile_sect(tile_height, tile_width, TSECT_TOP_MIDDLE_IN_SHEET);
-    SECTS[TSECT_MIDDLE]     = tile_sect(tile_height, tile_width, TSECT_MIDDLE_IN_SHEET);
+    SECTS[TSECT_GRAVEL_TOP] = tile_sect(tile_height, tile_width, TSECT_GRAVEL_TOP_IN_SHEET);
+    SECTS[TSECT_GRAVEL]     = tile_sect(tile_height, tile_width, TSECT_GRAVEL_IN_SHEET);
+    SECTS[TSECT_GRAVLE_BG]  = tile_sect(tile_height, tile_width, TSECT_GRAVEL_BG_IN_SHEET);
 
     MEDIUMS[TMEDIUM_SAND] = 2.0f;
     MEDIUMS[TMEDIUM_ROCK] = 1.0f;
@@ -41,6 +43,18 @@ float tile_get_medium(tile_t tile)
 Rectangle tile_get_texture(tile_t tile)
 {
     return SECTS[tile & SECT_MASK];
+}
+
+Rectangle tile_get_bg_texture(tile_t tile)
+{
+    int index = (tile & SECT_MASK);
+    index = index == 0 ? 2 : index + 1;
+    if (index >= MAX_SECTS)
+    {
+        printf("Invalid tile BG index\n");
+        CloseWindow();
+    }
+    return SECTS[index];
 }
 
 void tile_set_inactive(tile_t *tile)

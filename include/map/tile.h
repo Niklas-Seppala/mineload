@@ -16,9 +16,10 @@
  */
 typedef uint_least8_t tile_t;
 
-// TODO: Expand
-#define TSECT_MIDDLE             1
-#define TSECT_TOP_MIDDLE         0
+#define TSECT_GRAVEL_TOP         0
+#define TSECT_GRAVEL             1
+#define TSECT_GRAVLE_BG          2
+#define TSECT_DEEP_GRAVEL        3
 
 #define TMEDIUM_SAND             0
 #define TMEDIUM_ROCK             1
@@ -58,10 +59,19 @@ tile_t tile_create(int sprite_index, bool is_active, int medium);
  * @brief Get the specified tile's texture Rectangle.
  * 
  * @param tile Target tile.
- * @return Rectangle Rectangle of the tiles texture. 
+ * @return Rectangle Rectangle of the tiles texture.
  *         (Used in combination with spritesheet)
  */
 Rectangle tile_get_texture(tile_t tile);
+
+/**
+ * @brief Get the specified tile's background texture Rectangle.
+ * 
+ * @param tile Target tile.
+ * @return Rectangle Rectangle of the tiles bg texture.
+ *         (Used in combination with spritesheet)
+ */
+Rectangle tile_get_bg_texture(tile_t tile);
 
 /**
  * @brief Check if the specified tile is active.

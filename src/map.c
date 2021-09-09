@@ -4,7 +4,6 @@
 #include "camera.h"
 #include "parallax.h"
 
-#define TILE_SECTION_COUNT 6
 #define RENDER_X_PADDING 2
 #define RENDER_Y_PADDING 3
 
@@ -151,7 +150,7 @@ static void create_bg(void)
     struct layer_proto LAYERS[PARALLAX_LAYER_COUNT] =
     {
         {.texture = "res/sprites/BG.png", .speed = 0.99f, .tint = WHITE, .y_offset = -600.0f},
-        {.texture = "res/sprites/mountains.png", .speed = 0.9f, .tint = WHITE, .y_offset = -40.0f},
+        {.texture = "res/sprites/BG_MOUNTAINS.png", .speed = 0.9f, .tint = WHITE, .y_offset = -40.0f},
         {.texture = "res/sprites/mountains_close.png", .speed = 0.7f, .tint = WHITE, .y_offset = 30.0f},
     };
     parallax_init(PARALLAX_LAYER_COUNT, LAYERS, MAP_SCALE);
@@ -160,7 +159,8 @@ static void create_bg(void)
 static void create_map(void)
 {
     MAP = OOM_GUARD(calloc(1, sizeof(struct map)));
-    MAP->tiles.sheet = LoadTexture("res/sprites/tiles.png");
+    MAP->tiles.sheet = LoadTexture("res/sprites/tiles_3.png");
+
 
     const int TILE_HEIGHT = MAP->tiles.sheet.height;
     const int TILE_WIDTH = MAP->tiles.sheet.width / TILE_SECTION_COUNT;
@@ -182,7 +182,7 @@ static void create_map(void)
     {
         for (int x = 0; x < MAP_MATRIX_X; x++)
         {
-            int section = y == 0 ? TSECT_TOP_MIDDLE : TSECT_MIDDLE;
+            int section = y == 0 ? TSECT_GRAVEL_TOP : TSECT_GRAVEL;
             MAP->tiles.matrix[y][x] = tile_create(section, true, TMEDIUM_SAND);
         }
     }
@@ -213,6 +213,13 @@ static void render_tiles(void)
             {
                 DrawTexturePro(MAP->tiles.sheet,
                                tile_get_texture(MAP->tiles.matrix[y][x]),
+                               MAP->tiles.frame,
+                               Vector2Zero(), ROTATION_ZERO, WHITE);
+            }
+            else
+            {
+                DrawTexturePro(MAP->tiles.sheet,
+                               tile_get_bg_texture(MAP->tiles.matrix[y][x]),
                                MAP->tiles.frame,
                                Vector2Zero(), ROTATION_ZERO, WHITE);
             }
