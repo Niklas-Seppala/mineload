@@ -6,15 +6,15 @@
 #define MAP_MATRIX_X 256
 #define MAP_MATRIX_Y 1024
 #define PARALLAX_LAYER_COUNT 3
-#define MAP_SCALE 3.0f
-#define TILE_SECTION_COUNT 5
+#define MAP_SCALE SPRITE_SCALE
+#define TILE_SECTION_COUNT 7
 #define MAPSECT_TOP_MIDDLE 0
 #define MAPSECT_MIDDLE 1
 
 struct tiles
 {
     Texture2D sheet;                           // Tile sprite sheet
-    Rectangle frame;                           // Draw frame
+    Rectangle draw;                           // Draw frame
     tile_t matrix[MAP_MATRIX_Y][MAP_MATRIX_X]; // Map X-Y grid
 };
 

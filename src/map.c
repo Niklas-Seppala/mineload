@@ -13,6 +13,8 @@ static struct map *MAP;
 static void render_tiles(void);
 static void create_bg(void);
 static void create_map(void);
+static void draw_loot(tile_t tile, bool is_active);
+static void draw_tile(tile_t tile, bool is_active);
 
 void map_init(void)
 {
@@ -50,7 +52,7 @@ void map_destroy_tile(Vec2uint tile)
 
 int map_distance_x_in_grid(float a, float b, int pad_left, int pad_right)
 {
-    int result = (int)((a - b) / MAP->tiles.frame.width);
+    int result = (int)((a - b) / MAP->tiles.draw.width);
     if (result < 0)
     {
         // Clamp result index to the leftmost column of the map grid.
@@ -68,7 +70,7 @@ int map_distance_x_in_grid(float a, float b, int pad_left, int pad_right)
 
 int map_distance_y_in_grid(float a, float b, int pad_top, int pad_bot)
 {
-    int result = (int) ((a - b) / MAP->tiles.frame.height);
+    int result = (int) ((a - b) / MAP->tiles.draw.height);
     if (result < 0)
     {
         // Clamp result index to the top row of the map grid.
@@ -111,18 +113,18 @@ tile_t map_get_tile(Vec2uint tile)
 Vector2 map_get_tilepos(Vec2uint tile)
 {
     Vector2 result = { .x = MAP->ZERO.x, .y = MAP->ZERO.y };
-    result.x += tile.x * MAP->tiles.frame.width;
-    result.y += tile.y * MAP->tiles.frame.height;
+    result.x += tile.x * MAP->tiles.draw.width;
+    result.y += tile.y * MAP->tiles.draw.height;
     return result;
 }
 
 Rectangle map_get_tile_rec(void)
 {
     return (Rectangle) {
-        .x = MAP->tiles.frame.x,
-        .y = MAP->tiles.frame.y,
-        .height = MAP->tiles.frame.height,
-        .width = MAP->tiles.frame.width,
+        .x = MAP->tiles.draw.x,
+        .y = MAP->tiles.draw.y,
+        .height = MAP->tiles.draw.height,
+        .width = MAP->tiles.draw.width,
     };
 }
 
@@ -138,10 +140,6 @@ struct tile_expanded map_get_tile_expanded(Vec2uint tile)
     return result;
 }
 
-
-//-------------------------------------------//
-//------------ MODULE INTERNALS -------------//
-//-------------------------------------------//
 #define groundzero_Y_offset(tile_h) tile_h * 2
 #define groundzero_X_offset(tile_w) -tile_w * (MAP_MATRIX_X / 2)
 
@@ -161,29 +159,44 @@ static void create_map(void)
     MAP = OOM_GUARD(calloc(1, sizeof(struct map)));
     MAP->tiles.sheet = LoadTexture("res/sprites/tiles_3.png");
 
-
     const int TILE_HEIGHT = MAP->tiles.sheet.height;
     const int TILE_WIDTH = MAP->tiles.sheet.width / TILE_SECTION_COUNT;
 
     tile_init(TILE_HEIGHT, TILE_WIDTH);
-    MAP->tiles.frame = (Rectangle)
-    {
+    MAP->tiles.draw = (Rectangle) {
+        .x = 0, .y = 0,
         .height = TILE_HEIGHT * MAP_SCALE,
-        .width = TILE_WIDTH * MAP_SCALE,
-        .x = 0, .y = 0
+        .width = TILE_WIDTH * MAP_SCALE
     };
+    printf("%f\n", MAP->tiles.draw.width);
 
-    MAP->ZERO = (Vector2){
-        groundzero_X_offset(MAP->tiles.frame.width),
-        groundzero_Y_offset(MAP->tiles.frame.height)
+    MAP->ZERO = (Vector2) {
+        groundzero_X_offset(MAP->tiles.draw.width),
+        groundzero_Y_offset(MAP->tiles.draw.height)
     };
 
     for (int y = 0; y < MAP_MATRIX_Y; y++)
     {
         for (int x = 0; x < MAP_MATRIX_X; x++)
         {
+            // TODO: Separate function.
             int section = y == 0 ? TSECT_GRAVEL_TOP : TSECT_GRAVEL;
-            MAP->tiles.matrix[y][x] = tile_create(section, true, TMEDIUM_SAND);
+            if (y > 3)
+            {
+                section = TSECT_DEEP_GRAVEL;
+            }
+
+            //TODO: Separate function.
+            int loot = TSECT_LOOT_NONE;
+            if (y > 3)
+            {
+                int random_number = rand() % 100 + 1;
+                if (random_number > 95)
+                {
+                    loot = TSECT_LOOT_SILVER;
+                }
+            }
+            MAP->tiles.matrix[y][x] = tile_create(section, true, TMEDIUM_SAND, loot);
         }
     }
 }
@@ -193,15 +206,15 @@ static void render_tiles(void)
     Rectangle bounds = player_get_bounds();
     Vec2uint POS_IN_GRID = map_get_gridpos_padding(rec2vec2(bounds), 0, 1, 0, 2);
 
-    const int SCREEN_W_IN_TILES = ceil(SCREEN_START_WIDTH / MAP->tiles.frame.width);
-    const int SCREEN_H_IN_TILES = ceil(SCREE_START_HEIGHT / MAP->tiles.frame.height);
+    const int SCREEN_W_IN_TILES = ceil(SCREEN_START_WIDTH / MAP->tiles.draw.width);
+    const int SCREEN_H_IN_TILES = ceil(SCREE_START_HEIGHT / MAP->tiles.draw.height);
 
     Vec2uint MAP_SLICE;
     MAP_SLICE.x = (uint16_t)Clamp(POS_IN_GRID.x - ceil(SCREEN_W_IN_TILES / 2), 0, (MAP_MATRIX_X));
     MAP_SLICE.y = (uint16_t)Clamp(POS_IN_GRID.y - ceil(SCREEN_H_IN_TILES / 2), 0, (MAP_MATRIX_Y));
 
-    MAP->tiles.frame.x = MAP->ZERO.x + MAP_SLICE.x * MAP->tiles.frame.width;
-    MAP->tiles.frame.y = MAP->ZERO.y + MAP_SLICE.y * MAP->tiles.frame.height;
+    MAP->tiles.draw.x = MAP->ZERO.x + MAP_SLICE.x * MAP->tiles.draw.width;
+    MAP->tiles.draw.y = MAP->ZERO.y + MAP_SLICE.y * MAP->tiles.draw.height;
 
     const int MAX_X = (int)clamp_max((MAP_SLICE.x + SCREEN_W_IN_TILES + RENDER_X_PADDING), (MAP_MATRIX_X));
     const int MAX_Y = (int)clamp_max((MAP_SLICE.y + SCREEN_H_IN_TILES + RENDER_Y_PADDING), (MAP_MATRIX_Y));
@@ -209,23 +222,31 @@ static void render_tiles(void)
     {
         for (int x = MAP_SLICE.x; x < MAX_X; x++)
         {
-            if (tile_is_active(MAP->tiles.matrix[y][x]))
-            {
-                DrawTexturePro(MAP->tiles.sheet,
-                               tile_get_texture(MAP->tiles.matrix[y][x]),
-                               MAP->tiles.frame,
-                               Vector2Zero(), ROTATION_ZERO, WHITE);
-            }
-            else
-            {
-                DrawTexturePro(MAP->tiles.sheet,
-                               tile_get_bg_texture(MAP->tiles.matrix[y][x]),
-                               MAP->tiles.frame,
-                               Vector2Zero(), ROTATION_ZERO, WHITE);
-            }
-            MAP->tiles.frame.x += MAP->tiles.frame.width;
+            tile_t tile = MAP->tiles.matrix[y][x];
+            bool tile_active = tile_is_active(tile);
+            draw_tile(tile, tile_active);
+            draw_loot(tile, tile_active);
+            MAP->tiles.draw.x += MAP->tiles.draw.width;
         }
-        MAP->tiles.frame.x = MAP->ZERO.x + MAP_SLICE.x * MAP->tiles.frame.width;
-        MAP->tiles.frame.y += MAP->tiles.frame.height;
+        MAP->tiles.draw.x = MAP->ZERO.x + MAP_SLICE.x * MAP->tiles.draw.width;
+        MAP->tiles.draw.y += MAP->tiles.draw.height;
     }
+}
+
+static void draw_loot(tile_t tile, bool is_active)
+{
+    if (tile_has_loot(tile) && is_active)
+    {
+        Rectangle loot = tile_get_loot_texture(tile);
+        DrawTexturePro(MAP->tiles.sheet, loot, MAP->tiles.draw,
+                        Vector2Zero(), ROTATION_ZERO, WHITE);
+    }
+}
+
+static void draw_tile(tile_t tile, bool is_active)
+{
+    Rectangle texture = is_active ? tile_get_texture(tile)
+                                  : tile_get_bg_texture(tile);
+    DrawTexturePro(MAP->tiles.sheet, texture, MAP->tiles.draw,
+                   Vector2Zero(), ROTATION_ZERO, GetColor(0xb3b3b3ff));
 }

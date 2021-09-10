@@ -30,6 +30,7 @@ void vec2_dir_normal(const Vector2 *a, const Vector2 *b, Vector2 *out);
 #define inc_wrap(index, max) (index + 1) % max
 #define dec_wrap(index, max) (index - 1) < 0 ? max-1 : index - 1
 #define clamp_max(val, max) (val > max ? max : val)
+#define clamp_min(val, min) (val < min ? min : val)
 
 typedef struct vec2uint
 {

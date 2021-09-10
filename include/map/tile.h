@@ -3,23 +3,34 @@
 #include "core.h"
 
 /**
- * @brief Essential tile state data is packed to single byte. Pretty cool.
- *          [ 0 0 0 ]     [0]    [0 0 0 0]
- *           MEDIUM     ACTIVE    SPRITE
+ * @brief Essential tile state data is packed to 16 bits.
+ *        Bit order:
+ *          [0 0 0 0]    [0 0 0 0]   [0 0 0 0]   [0 0 0 0]
+ *           FLAGS         LOOT       MEDIUM      SPRITE  
  *
- *        Sprite sheet index is stored in the first 4 bits.
- *        NOTE (15 SPRITES)
+ *      FLAGS: MASK 0xf000
+ *          [1] 0 0 0 ACTIVE    MASK 0x8000
+ *          0 [1] 0 0 EXPLOSIVE MASK 0x4000
+ *          0 0 [1] 0 UNUSED    MASK 0x2000
+ *          0 0 0 [1] UNUSED    MASK 0x1000
+ *
+ *      LOOT: MASK 0x0f00
+ *          INDEX 0-15, maps to static loot array.
+ *
+ *      MEDIUM: MASK 0x00f0
+ *          INDEX 0-15, maps to static medium array.
  * 
- *        State data is stored to last 4 bits.
- *        First of these is reserverd for active flag.
- *        Last three hold the tile's medium value index.
+ *      SPRITE: MASK 0x000f
+ *          INDEX 0-15, maps to static sprite array.
  */
-typedef uint_least8_t tile_t;
+typedef uint_least16_t tile_t;
 
 #define TSECT_GRAVEL_TOP         0
-#define TSECT_GRAVEL             1
-#define TSECT_GRAVLE_BG          2
-#define TSECT_DEEP_GRAVEL        3
+#define TSECT_GRAVEL             2
+#define TSECT_DEEP_GRAVEL        4
+
+#define TSECT_LOOT_NONE          0
+#define TSECT_LOOT_SILVER        1
 
 #define TMEDIUM_SAND             0
 #define TMEDIUM_ROCK             1
@@ -51,9 +62,10 @@ void tile_init(int tile_height, int tile_width);
  *         --> sprite index is 2.
  * @param is_active Is the tile active at creation. (Can be modified)
  * @param medium What is the tiles medium. (rock, sand, etc.)
+ * @param loot Does tile contain loot. (minerals, treasures etc.)
  * @return tile_t Packed tile.
  */
-tile_t tile_create(int sprite_index, bool is_active, int medium);
+tile_t tile_create(int sprite_index, bool is_active, int medium, int loot);
 
 /**
  * @brief Get the specified tile's texture Rectangle.
@@ -72,6 +84,15 @@ Rectangle tile_get_texture(tile_t tile);
  *         (Used in combination with spritesheet)
  */
 Rectangle tile_get_bg_texture(tile_t tile);
+
+/**
+ * @brief Get the specified tile's possible loot texture Rectangle.
+ * 
+ * @param tile Target tile
+ * @return Rectangle Rectangle of the tiles loot texture.
+ *         (Used in combination with spritesheet)
+ */
+Rectangle tile_get_loot_texture(tile_t tile);
 
 /**
  * @brief Check if the specified tile is active.
@@ -97,12 +118,13 @@ void tile_set_inactive(tile_t *tile);
  */
 float tile_get_medium(tile_t tile);
 
-
 /**
- * @brief 
+ * @brief Check if the specified tile has loot stored in it.
  * 
- * @param flag 
+ * @param tile Target tile.
+ * @return true if tile has loot.
+ * @return false if not.
  */
-void player_clear_state(uint8_t flag);
+bool tile_has_loot(tile_t tile);
 
 #endif

@@ -35,5 +35,6 @@ Vector2 player_get_speed(void);
 Rectangle player_get_bounds(void);
 struct colliders *player_get_colliders(void);
 void player_set_state(uint8_t flag);
+void player_clear_state(uint8_t flag);
 
 #endif // PLAYER_H

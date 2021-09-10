@@ -22,9 +22,9 @@ void mapcolliders_check_collisions(struct colliders *colliders, const struct map
 
     // Copy readonly value to mutable rec and move it to first
     // collision checking position.
-    Rectangle mut_tile = MAP->tiles.frame;
-    mut_tile.x = MAP->ZERO.x + POS_IN_GRID.x * MAP->tiles.frame.width;
-    mut_tile.y = MAP->ZERO.y + POS_IN_GRID.y * MAP->tiles.frame.height;
+    Rectangle mut_tile = MAP->tiles.draw;
+    mut_tile.x = MAP->ZERO.x + POS_IN_GRID.x * MAP->tiles.draw.width;
+    mut_tile.y = MAP->ZERO.y + POS_IN_GRID.y * MAP->tiles.draw.height;
 
     // Checking the leftmost tiles next the player for collisions.
     const float INIT_Y = mut_tile.y;
@@ -32,7 +32,7 @@ void mapcolliders_check_collisions(struct colliders *colliders, const struct map
 
     // Checking the rightmost tile next to player for collisions.
     mut_tile.y = INIT_Y;
-    mut_tile.x += MAP->tiles.frame.width;
+    mut_tile.x += MAP->tiles.draw.width;
     collision_column(MAP, POS_IN_GRID.x + 1, POS_IN_GRID.y, &mut_tile, colliders);
 }
 

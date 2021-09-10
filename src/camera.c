@@ -15,7 +15,6 @@ void camera_init(Vector2 start, const int screen_w, const int screen_h)
     CAMERA.offset = (Vector2){ SCREEN_W / 2.0f, SCREEN_H/ 2.0f };
     CAMERA.rotation = 0.0f;
     CAMERA.zoom = 1.0f;
-
     FONT = LoadFont("res/fonts/alpha_beta.png");
 }
 
@@ -47,4 +46,10 @@ Vector2 camera_get_world_to_screen(const Vector2 pos)
 void camera_update(const Vector2 follow)
 {
     CAMERA.target = (Vector2){ follow.x + 20, follow.y + 20 };
+
+    #ifdef DEBUG
+    float wheel = GetMouseWheelMove() / 5;
+    CAMERA.zoom -= wheel;
+    CAMERA.zoom = clamp_min(CAMERA.zoom, 0.5f);
+    #endif
 }
