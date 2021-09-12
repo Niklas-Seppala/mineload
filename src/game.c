@@ -1,4 +1,5 @@
 #include "game.h"
+#include "screen.h"
 
 void init(void)
 {

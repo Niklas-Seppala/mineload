@@ -3,9 +3,10 @@
 #include "player.h"
 #include "player/renderer.h"
 #include "player/drill.h"
+#include "player/states.h"
 
 #define PLAYER_RUN_SPEED 200
-#define PLAYER_JUMP_SPEED 200
+#define PLAYER_JUMP_SPEED 300
 
 static void update_colliders(void);
 static void update_speed(float delta_time);
@@ -16,13 +17,13 @@ static void update_speed_collisions(void);
 static struct player
 {
     int health;
+    int state;
     Vector2 speed;
     Vector2 position;
-    uint8_t state;
     struct colliders colliders;
 } PLAYER;
 
-uint8_t player_get_state(void)
+int player_get_state(void)
 {
     return PLAYER.state;
 }
@@ -36,7 +37,6 @@ void player_update(float deltatime)
 {
     if (player_is_occupied())
     {
-        // SOLVE THESE STATES
         if (PLAYER.state & PLAYER_STATE_DRILL)
         {
             PLAYER.speed = Vector2Zero();
@@ -188,9 +188,8 @@ static void update_speed(float delta_time)
     {
         update_speed_collisions();
     }
+
     PLAYER.position = Vector2Add(PLAYER.position, PLAYER.speed);
-    PLAYER.position.x = (int)PLAYER.position.x;
-    PLAYER.position.y = (int)PLAYER.position.y;
 }
 
 static void update_speed_collisions(void)
@@ -206,7 +205,7 @@ static void update_speed_collisions(void)
             PLAYER.speed.y = 0;
     }
     if (PLAYER.colliders.collision.right)
-    {   
+    {
         if (PLAYER.speed.x > 0)
             PLAYER.speed.x = 0;
     }

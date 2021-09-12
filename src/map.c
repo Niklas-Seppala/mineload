@@ -2,6 +2,7 @@
 #include "map/colliders.h"
 #include "map/tile.h"
 #include "camera.h"
+#include "screen.h"
 #include "parallax.h"
 
 #define RENDER_X_PADDING 2
@@ -168,7 +169,6 @@ static void create_map(void)
         .height = TILE_HEIGHT * MAP_SCALE,
         .width = TILE_WIDTH * MAP_SCALE
     };
-    printf("%f\n", MAP->tiles.draw.width);
 
     MAP->ZERO = (Vector2) {
         groundzero_X_offset(MAP->tiles.draw.width),
@@ -181,7 +181,7 @@ static void create_map(void)
         {
             // TODO: Separate function.
             int section = y == 0 ? TSECT_GRAVEL_TOP : TSECT_GRAVEL;
-            if (y > 3)
+            if (y > 10)
             {
                 section = TSECT_DEEP_GRAVEL;
             }
@@ -248,5 +248,5 @@ static void draw_tile(tile_t tile, bool is_active)
     Rectangle texture = is_active ? tile_get_texture(tile)
                                   : tile_get_bg_texture(tile);
     DrawTexturePro(MAP->tiles.sheet, texture, MAP->tiles.draw,
-                   Vector2Zero(), ROTATION_ZERO, GetColor(0xb3b3b3ff));
+                   Vector2Zero(), ROTATION_ZERO, COLOR_WHITE);
 }

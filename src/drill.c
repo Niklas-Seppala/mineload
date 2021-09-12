@@ -1,6 +1,7 @@
-#include "player/renderer.h"
-#include "player/drill.h"
 #include "player.h"
+#include "player/drill.h"
+#include "player/states.h"
+#include "player/renderer.h"
 #include "map.h"
 #include "map/tile.h"
 
@@ -44,8 +45,9 @@ void player_drill_begin(void)
     TARGET = map_get_tile_expanded(PLAYER_DRILL_TILE);
     if (!TARGET.is_active)
     {
-        // Clear drill state
-        player_clear_state(PLAYER_STATE_DRILL);
+        player_clear_state(PLAYER_STATE_DRILL
+            | PLAYER_STATE_DRILL_S_HIGH
+            | PLAYER_STATE_DRILL_S_LOW);
         return;
     }
     TARGET.world_pos.y += 10;

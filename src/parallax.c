@@ -1,7 +1,7 @@
 #include "parallax.h"
 #include "player.h"
 #include "input.h"
-#include "game.h"
+#include "screen.h"
 
 static int P_LAYER_COUNT;
 static float SCALE;

@@ -3,7 +3,7 @@
 #include "core.h"
 #include "game.h"
 
-#define PLAYER_FRAME_SPEED 15
+#define PLAYER_FRAME_SPEED 10
 #define PLAYER_SCALE SPRITE_SCALE
 
 void player_renderer_init(void);

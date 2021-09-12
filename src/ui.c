@@ -2,7 +2,7 @@
 #include "camera.h"
 #include "player.h"
 #include "debug.h"
-#include "game.h"
+#include "screen.h"
 
 static Font MAIN_FONT;
 
@@ -10,6 +10,7 @@ static Font MAIN_FONT;
 static char UI_TEXT_BUFFER[MAX_UI_TEX];
 
 #ifdef DEBUG
+#include "player/states.h"
 static void print_player_stats(void);
 static void print_procmem(void);
 #endif
@@ -65,7 +66,7 @@ static void print_player_stats(void)
 {
     const Vector2 PLAYER_POS = player_get_pos();
     const Vector2 PLAYER_SPEED = player_get_speed();
-    const uint8_t STATE = player_get_state();
+    const int STATE = player_get_state();
 
     ui_screen_printf((Vector2) {10, 20}, FONT_S, GREEN,
         "POS         X %.2f Y %.2f", PLAYER_POS.x, PLAYER_POS.y);
