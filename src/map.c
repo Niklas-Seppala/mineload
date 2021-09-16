@@ -16,6 +16,7 @@ static void create_bg(void);
 static void create_map(void);
 static void draw_loot(tile_t tile, bool is_active);
 static void draw_tile(tile_t tile, bool is_active);
+static tile_t randomize_tile(int x, int y);
 
 void map_init(void)
 {
@@ -179,26 +180,30 @@ static void create_map(void)
     {
         for (int x = 0; x < MAP_MATRIX_X; x++)
         {
-            // TODO: Separate function.
-            int section = y == 0 ? TSECT_GRAVEL_TOP : TSECT_GRAVEL;
-            if (y > 10)
-            {
-                section = TSECT_DEEP_GRAVEL;
-            }
-
-            //TODO: Separate function.
-            int loot = TSECT_LOOT_NONE;
-            if (y > 3)
-            {
-                int random_number = rand() % 100 + 1;
-                if (random_number > 95)
-                {
-                    loot = TSECT_LOOT_SILVER;
-                }
-            }
-            MAP->tiles.matrix[y][x] = tile_create(section, true, TMEDIUM_SAND, loot);
+            MAP->tiles.matrix[y][x] = randomize_tile(x, y);
         }
     }
+}
+
+static tile_t randomize_tile(int x, int y) // FIXME Puke
+{
+    int rnd = rand_fromrange(1, 100);
+    bool active = rnd > 2;
+    int medium = TMEDIUM_GRAVEL;
+    int section = y == 0 ? TSECT_GRAVEL_TOP : TSECT_GRAVEL;
+    if (y > 10)
+    {
+        medium = TMEDIUM_GRAVEL_DEEP;
+        section = TSECT_DEEP_GRAVEL;
+    }
+
+    int loot = TSECT_LOOT_NONE;
+    if (y > 3 && rnd > 95)
+    {
+        loot = TSECT_LOOT_SILVER;
+    }
+
+    return tile_create(section, active, medium, loot);
 }
 
 static void render_tiles(void)
@@ -248,5 +253,5 @@ static void draw_tile(tile_t tile, bool is_active)
     Rectangle texture = is_active ? tile_get_texture(tile)
                                   : tile_get_bg_texture(tile);
     DrawTexturePro(MAP->tiles.sheet, texture, MAP->tiles.draw,
-                   Vector2Zero(), ROTATION_ZERO, COLOR_WHITE);
+                   Vector2Zero(), ROTATION_ZERO, COLOR_NEAT_WHITE);
 }

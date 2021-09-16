@@ -49,11 +49,11 @@ static void check_collider_tile(const Rectangle *tile, const Rectangle *collider
     if (CheckCollisionRecs(*tile, *collider))
     {
         *result = true;
-        #ifdef DEBUG_COLLIDERS
+        #ifdef DEBUG_PLAYER_COLLIDERS
         debug_rec_outlines_all(collider, COLOR_RED);
         #endif
     }
-    #ifdef DEBUG_COLLIDERS
+    #ifdef DEBUG_TILE_COLLIDERS
     debug_rec_outlines_all(tile, COLOR_GREEN);
     #endif
 }

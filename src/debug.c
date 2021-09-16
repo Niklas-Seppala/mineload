@@ -142,12 +142,12 @@ void debug_printf_world_anywhere(Vector2 pos, int size, Color color,
     }
 }
 
-void debug_rec_outlines_all(const Rectangle *rec, Color color)
+void debug_rec_outlines_anywhere(const Rectangle *rec, Color color)
 {
     add_rec_draw(rec, color);
 }
 
-void debug_dot_all(Vector2 pos, float radius, Color color)
+void debug_dot_anywhere(Vector2 pos, float radius, Color color)
 {
     add_dot_draw(pos, radius, color);
 }

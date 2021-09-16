@@ -23,16 +23,6 @@ Camera2D camera_get_camera(void)
     return CAMERA;
 }
 
-Vector2 camera_get_offset(void)
-{
-    return CAMERA.offset;
-}
-
-Vector2 camera_get_position(void)
-{
-    return Vector2Add(CAMERA.target, CAMERA.offset);
-}
-
 Vector2 camera_get_screen_to_world(const Vector2 pos)
 {
     return GetScreenToWorld2D(pos, CAMERA);

@@ -1,7 +1,6 @@
 /**
  * @brief This debug module is only included with DEBUG - buildflag.
- *        ALL calls to this module MUST be wrapped in preprocessor
- *        ifdefs.
+ *        ALL calls to this module MUST be wrapped in ifdefs.
  */
 #ifdef DEBUG
 #ifndef DEBUG_H
@@ -11,8 +10,10 @@
 
 // Toggle more specific debug options
 //-----------------------------------
-// #define DEBUG_COLLIDERS
+// #define DEBUG_TILE_COLLIDERS
+// #define DEBUG_PLAYER_COLLIDERS
 // #define DEBUG_PLAYER_SPRITE
+// #define DEBUG_PARALLAX
 #define DEBUG_PROCM
 #define DEBUG_PLAYER_STATUS
 //-----------------------------------
@@ -64,7 +65,7 @@ void debug_dot(Vector2 pos, float radius, Color color);
  * @param radius Dot radius.
  * @param color  Dot color.
  */
-void debug_dot_all(Vector2 pos, float radius, Color color);
+void debug_dot_anywhere(Vector2 pos, float radius, Color color);
 
 /**
  * @brief Draws rectangle outlines to screen.
@@ -82,7 +83,7 @@ void debug_rec_outlines(const Rectangle *rec, Color color);
  * @param rec Rectangle object.
  * @param color Rectangle color.
  */
-void debug_rec_outlines_all(const Rectangle *rec, Color color);
+void debug_rec_outlines_anywhere(const Rectangle *rec, Color color);
 
 /**
  * @brief Printf function frow drawing text to game world. Can be

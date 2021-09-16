@@ -99,8 +99,8 @@ static void store_tile_loots(int h, int w)
 
 static void store_tile_mediums(void)
 {
-    MEDIUMS[TMEDIUM_SAND] = 2.0f;
-    MEDIUMS[TMEDIUM_ROCK] = 1.0f;
+    MEDIUMS[TMEDIUM_GRAVEL] = 1.5f;
+    MEDIUMS[TMEDIUM_GRAVEL_DEEP] = 1.0f;
 }
 
 static Rectangle tile_sect(int h, int w, int TSECT)

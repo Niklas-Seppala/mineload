@@ -32,8 +32,8 @@ typedef uint_least16_t tile_t;
 #define TSECT_LOOT_NONE          0
 #define TSECT_LOOT_SILVER        1
 
-#define TMEDIUM_SAND             0
-#define TMEDIUM_ROCK             1
+#define TMEDIUM_GRAVEL            0
+#define TMEDIUM_GRAVEL_DEEP       1
 
 /**
  * @brief Uncompressed tile object plus some other stuff.
